@@ -1,0 +1,21 @@
+def [METHOD] BuiltinFunctionObject.Construct(F)(argumentsList, newTarget) = {
+  0:let callerContext = CONTEXT
+  1:if (= callerContext null) 1:CONTEXT = null else 1:{}
+  2:let calleeContext = (new ExecutionContext())
+  3:calleeContext.Function = F
+  4:let calleeRealm = F.Realm
+  5:calleeContext.Realm = calleeRealm
+  6:calleeContext.ScriptOrModule = null
+  8:append calleeContext -> EXECUTION_STACK
+  8:CONTEXT = EXECUTION_STACK[(- EXECUTION_STACK.length 1i)]
+  9:app result = (F.Code undefined argumentsList newTarget)
+  10:if (= EXECUTION_STACK[(- EXECUTION_STACK.length 1i)] calleeContext) {
+    10:let __x0__ = (- EXECUTION_STACK.length 1i)
+    10:(pop EXECUTION_STACK __x0__)
+  } else 10:{}
+  10:CONTEXT = EXECUTION_STACK[(- EXECUTION_STACK.length 1i)]
+  11:return result
+}
+- id: "sec-built-in-function-objects-construct-argumentslist-newtarget"
+- code:
+        1. Let _result_ be the Completion Record that is the result of evaluating _F_ in a manner that conforms to the specification of _F_. The *this* value is uninitialized, _argumentsList_ provides the named parameters, and _newTarget_ provides the NewTarget value.

@@ -1,0 +1,14 @@
+def Number::sameValue(x, y) = 0:{
+  0:if (&& (= x NaN) (= y NaN)) 0:return true else 0:{}
+  1:if (&& (= x 0i) (= y -0.0)) 1:return false else 1:{}
+  2:if (&& (= x -0.0) (= y 0i)) 2:return false else 2:{}
+  3:if (= x y) 3:return true else 3:{}
+  4:return false
+}
+- id: "sec-numeric-types-number-sameValue"
+- code:
+            1. If _x_ is *NaN* and _y_ is *NaN*, return *true*.
+            1. If _x_ is *+0*<sub>𝔽</sub> and _y_ is *-0*<sub>𝔽</sub>, return *false*.
+            1. If _x_ is *-0*<sub>𝔽</sub> and _y_ is *+0*<sub>𝔽</sub>, return *false*.
+            1. If _x_ is the same Number value as _y_, return *true*.
+            1. Return *false*.

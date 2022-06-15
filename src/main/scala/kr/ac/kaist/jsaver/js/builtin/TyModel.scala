@@ -1,0 +1,143 @@
+package kr.ac.kaist.jsaver.js.builtin
+
+import kr.ac.kaist.jsaver.ir.Ty._
+import kr.ac.kaist.jsaver.ir._
+import kr.ac.kaist.jsaver.js._
+
+// type modeling
+object TyModel {
+  lazy val infos: List[Info] = List(
+    I("Object", Map(
+      "GetPrototypeOf" -> algoMap("OrdinaryObject.GetPrototypeOf"),
+      "SetPrototypeOf" -> algoMap("OrdinaryObject.SetPrototypeOf"),
+      "IsExtensible" -> algoMap("OrdinaryObject.IsExtensible"),
+      "PreventExtensions" -> algoMap("OrdinaryObject.PreventExtensions"),
+      "GetOwnProperty" -> algoMap("OrdinaryObject.GetOwnProperty"),
+      "DefineOwnProperty" -> algoMap("OrdinaryObject.DefineOwnProperty"),
+      "HasProperty" -> algoMap("OrdinaryObject.HasProperty"),
+      "Get" -> algoMap("OrdinaryObject.Get"),
+      "Set" -> algoMap("OrdinaryObject.Set"),
+      "Delete" -> algoMap("OrdinaryObject.Delete"),
+      "OwnPropertyKeys" -> algoMap("OrdinaryObject.OwnPropertyKeys"),
+    )),
+    I("OrdinaryObject", parent = "Object", Map()),
+    I("FunctionObject", parent = "OrdinaryObject", Map()),
+    I("ECMAScriptFunctionObject", parent = "FunctionObject", Map(
+      "Call" -> algoMap("ECMAScriptFunctionObject.Call"),
+      "Construct" -> algoMap("ECMAScriptFunctionObject.Construct"),
+    )),
+    I("BuiltinFunctionObject", parent = "FunctionObject", Map(
+      "Call" -> algoMap("BuiltinFunctionObject.Call"),
+    )),
+    I("BoundFunctionExoticObject", parent = "Object", Map(
+      "Call" -> algoMap("BoundFunctionExoticObject.Call"),
+      "Construct" -> algoMap("BoundFunctionExoticObject.Construct"),
+    )),
+    I("ArrayExoticObject", parent = "Object", Map(
+      "DefineOwnProperty" -> algoMap("ArrayExoticObject.DefineOwnProperty"),
+    )),
+    I("StringExoticObject", parent = "Object", Map(
+      "GetOwnProperty" -> algoMap("StringExoticObject.GetOwnProperty"),
+      "DefineOwnProperty" -> algoMap("StringExoticObject.DefineOwnProperty"),
+      "OwnPropertyKeys" -> algoMap("StringExoticObject.OwnPropertyKeys"),
+    )),
+    I("ArgumentsExoticObject", parent = "Object", Map(
+      "GetOwnProperty" -> algoMap("ArgumentsExoticObject.GetOwnProperty"),
+      "DefineOwnProperty" -> algoMap("ArgumentsExoticObject.DefineOwnProperty"),
+      "Get" -> algoMap("ArgumentsExoticObject.Get"),
+      "Set" -> algoMap("ArgumentsExoticObject.Set"),
+      "Delete" -> algoMap("ArgumentsExoticObject.Delete"),
+    )),
+    I("IntegerIndexedExoticObject", parent = "Object", Map(
+      "GetOwnProperty" -> algoMap("IntegerIndexedExoticObject.GetOwnProperty"),
+      "HasProperty" -> algoMap("IntegerIndexedExoticObject.HasProperty"),
+      "DefineOwnProperty" -> algoMap("IntegerIndexedExoticObject.DefineOwnProperty"),
+      "Get" -> algoMap("IntegerIndexedExoticObject.Get"),
+      "Set" -> algoMap("IntegerIndexedExoticObject.Set"),
+      "Delete" -> algoMap("IntegerIndexedExoticObject.Delete"),
+      "OwnPropertyKeys" -> algoMap("IntegerIndexedExoticObject.OwnPropertyKeys"),
+    )),
+    I("ImmutablePrototypeExoticObject", parent = "Object", Map(
+      "SetPrototypeOf" -> algoMap("ImmutablePrototypeExoticObject.SetPrototypeOf"),
+    )),
+    I("ProxyObject", parent = "Object", Map(
+      "GetPrototypeOf" -> algoMap("ProxyObject.GetPrototypeOf"),
+      "SetPrototypeOf" -> algoMap("ProxyObject.SetPrototypeOf"),
+      "IsExtensible" -> algoMap("ProxyObject.IsExtensible"),
+      "PreventExtensions" -> algoMap("ProxyObject.PreventExtensions"),
+      "GetOwnProperty" -> algoMap("ProxyObject.GetOwnProperty"),
+      "DefineOwnProperty" -> algoMap("ProxyObject.DefineOwnProperty"),
+      "HasProperty" -> algoMap("ProxyObject.HasProperty"),
+      "Get" -> algoMap("ProxyObject.Get"),
+      "Set" -> algoMap("ProxyObject.Set"),
+      "Delete" -> algoMap("ProxyObject.Delete"),
+      "OwnPropertyKeys" -> algoMap("ProxyObject.OwnPropertyKeys"),
+      "Call" -> algoMap("ProxyObject.Call"),
+      "Construct" -> algoMap("ProxyObject.Construct"),
+    )),
+    I("ArrayBufferObject", parent = "Object", Map()),
+    I("BooleanObject", parent = "OrdinaryObject", Map()),
+    I("BigIntObject", parent = "OrdinaryObject", Map()),
+    I("NumberObject", parent = "OrdinaryObject", Map()),
+    I("SymbolObject", parent = "OrdinaryObject", Map()),
+    // special instances
+    I("ForInIteratorInstance", parent = "OrdinaryObject", Map()),
+    I("AsynFromSyncIteratorInstance", parent = "OrdinaryObject", Map()),
+    I("PromiseInstance", parent = "OrdinaryObject", Map()),
+    I("GeneratorInstance", parent = "OrdinaryObject", Map()),
+    I("AsyncGeneratorInstance", parent = "OrdinaryObject", Map()),
+    // environment records
+    I("LexicalEnvironment", Map()),
+    I("EnvironmentRecord", parent = "LexicalEnvironment", Map()),
+    I("DeclarativeEnvironmentRecord", parent = "EnvironmentRecord", Map(
+      "HasBinding" -> algoMap("DeclarativeEnvironmentRecord.HasBinding"),
+      "CreateMutableBinding" -> algoMap("DeclarativeEnvironmentRecord.CreateMutableBinding"),
+      "CreateImmutableBinding" -> algoMap("DeclarativeEnvironmentRecord.CreateImmutableBinding"),
+      "InitializeBinding" -> algoMap("DeclarativeEnvironmentRecord.InitializeBinding"),
+      "SetMutableBinding" -> algoMap("DeclarativeEnvironmentRecord.SetMutableBinding"),
+      "GetBindingValue" -> algoMap("DeclarativeEnvironmentRecord.GetBindingValue"),
+      "DeleteBinding" -> algoMap("DeclarativeEnvironmentRecord.DeleteBinding"),
+      "HasThisBinding" -> algoMap("DeclarativeEnvironmentRecord.HasThisBinding"),
+      "HasSuperBinding" -> algoMap("DeclarativeEnvironmentRecord.HasSuperBinding"),
+      "WithBaseObject" -> algoMap("DeclarativeEnvironmentRecord.WithBaseObject"),
+    )),
+    I("ObjectEnvironmentRecord", parent = "EnvironmentRecord", Map(
+      "HasBinding" -> algoMap("ObjectEnvironmentRecord.HasBinding"),
+      "CreateMutableBinding" -> algoMap("ObjectEnvironmentRecord.CreateMutableBinding"),
+      "InitializeBinding" -> algoMap("ObjectEnvironmentRecord.InitializeBinding"),
+      "SetMutableBinding" -> algoMap("ObjectEnvironmentRecord.SetMutableBinding"),
+      "GetBindingValue" -> algoMap("ObjectEnvironmentRecord.GetBindingValue"),
+      "DeleteBinding" -> algoMap("ObjectEnvironmentRecord.DeleteBinding"),
+      "HasThisBinding" -> algoMap("ObjectEnvironmentRecord.HasThisBinding"),
+      "HasSuperBinding" -> algoMap("ObjectEnvironmentRecord.HasSuperBinding"),
+      "WithBaseObject" -> algoMap("ObjectEnvironmentRecord.WithBaseObject"),
+    )),
+    I("FunctionEnvironmentRecord", parent = "DeclarativeEnvironmentRecord", Map(
+      "BindThisValue" -> algoMap("FunctionEnvironmentRecord.BindThisValue"),
+      "HasThisBinding" -> algoMap("FunctionEnvironmentRecord.HasThisBinding"),
+      "HasSuperBinding" -> algoMap("FunctionEnvironmentRecord.HasSuperBinding"),
+      "GetThisBinding" -> algoMap("FunctionEnvironmentRecord.GetThisBinding"),
+      "GetSuperBase" -> algoMap("FunctionEnvironmentRecord.GetSuperBase"),
+    )),
+    I("GlobalEnvironmentRecord", parent = "EnvironmentRecord", Map(
+      "HasBinding" -> algoMap("GlobalEnvironmentRecord.HasBinding"),
+      "CreateMutableBinding" -> algoMap("GlobalEnvironmentRecord.CreateMutableBinding"),
+      "CreateImmutableBinding" -> algoMap("GlobalEnvironmentRecord.CreateImmutableBinding"),
+      "InitializeBinding" -> algoMap("GlobalEnvironmentRecord.InitializeBinding"),
+      "SetMutableBinding" -> algoMap("GlobalEnvironmentRecord.SetMutableBinding"),
+      "GetBindingValue" -> algoMap("GlobalEnvironmentRecord.GetBindingValue"),
+      "DeleteBinding" -> algoMap("GlobalEnvironmentRecord.DeleteBinding"),
+      "HasThisBinding" -> algoMap("GlobalEnvironmentRecord.HasThisBinding"),
+      "HasSuperBinding" -> algoMap("GlobalEnvironmentRecord.HasSuperBinding"),
+      "WithBaseObject" -> algoMap("GlobalEnvironmentRecord.WithBaseObject"),
+      "GetThisBinding" -> algoMap("GlobalEnvironmentRecord.GetThisBinding"),
+      "HasVarDeclaration" -> algoMap("GlobalEnvironmentRecord.HasVarDeclaration"),
+      "HasLexicalDeclaration" -> algoMap("GlobalEnvironmentRecord.HasLexicalDeclaration"),
+      "HasRestrictedGlobalProperty" -> algoMap("GlobalEnvironmentRecord.HasRestrictedGlobalProperty"),
+      "CanDeclareGlobalVar" -> algoMap("GlobalEnvironmentRecord.CanDeclareGlobalVar"),
+      "CanDeclareGlobalFunction" -> algoMap("GlobalEnvironmentRecord.CanDeclareGlobalFunction"),
+      "CreateGlobalVarBinding" -> algoMap("GlobalEnvironmentRecord.CreateGlobalVarBinding"),
+      "CreateGlobalFunctionBinding" -> algoMap("GlobalEnvironmentRecord.CreateGlobalFunctionBinding"),
+    )),
+  )
+}

@@ -1,0 +1,24 @@
+def Contains(this, target) = {
+  access kind = (this "kind")
+  if (= kind target) return true else {}
+  access children = (this "children")
+  let length = children.length
+  let i = 0i
+  while (< i length) {
+    let child = children[i]
+    if (= (typeof child) "AST") {
+      access check = (child "Contains" target)
+      if check return true else {}
+    } else {}
+    i = (+ i 1i)
+  }
+  return false
+}
+- id: "sec-static-semantics-contains"
+- code:
+        1. For each child node _child_ of this Parse Node, do
+          1. If _child_ is an instance of _symbol_, return *true*.
+          1. If _child_ is an instance of a nonterminal, then
+            1. Let _contained_ be the result of _child_ Contains _symbol_.
+            1. If _contained_ is *true*, return *true*.
+        1. Return *false*.

@@ -1,0 +1,26 @@
+def [SYNTAX] ForDeclaration[0,0].ForDeclarationBindingInstantiation[R]<(LetOrConst, ForBinding),true>(environment) = 0:{
+  0:assert (is-instance-of environment DeclarativeEnvironmentRecord)
+  1:access __x0__ = (ForBinding "BoundNames")
+  1:let __x1__ = __x0__
+  1:let __x2__ = 0i
+  1:while (< __x2__ __x1__.length) 1:{
+    1:let name = __x1__[__x2__]
+    1:__x2__ = (+ __x2__ 1i)
+    2:access __x3__ = (LetOrConst "IsConstantDeclaration")
+    2:if (= __x3__ true) 2:{
+      3:app __x4__ = (environment.CreateImmutableBinding environment name true)
+      3:[! __x4__]
+    } else 4:{
+      5:app __x5__ = (environment.CreateMutableBinding environment name false)
+      5:[! __x5__]
+    }
+  }
+}
+- id: "sec-runtime-semantics-fordeclarationbindinginstantiation"
+- code:
+          1. Assert: _environment_ is a declarative Environment Record.
+          1. For each element _name_ of the BoundNames of |ForBinding|, do
+            1. If IsConstantDeclaration of |LetOrConst| is *true*, then
+              1. Perform ! _environment_.CreateImmutableBinding(_name_, *true*).
+            1. Else,
+              1. Perform ! _environment_.CreateMutableBinding(_name_, *false*).

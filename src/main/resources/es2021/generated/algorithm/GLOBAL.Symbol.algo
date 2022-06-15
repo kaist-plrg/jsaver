@@ -1,0 +1,14 @@
+def [BUILTIN] Symbol(description?) = 0:{
+  0:if (! (= NewTarget undefined)) 0:throw TypeError else 0:{}
+  1:if (= description undefined) 1:let descString = undefined else 2:{
+    2:app __x0__ = (ToString description)
+    2:let descString = [? __x0__]
+  }
+  3:return (new 'descString)
+}
+- id: "sec-symbol-description"
+- code:
+          1. If NewTarget is not *undefined*, throw a *TypeError* exception.
+          1. If _description_ is *undefined*, let _descString_ be *undefined*.
+          1. Else, let _descString_ be ? ToString(_description_).
+          1. Return a new unique Symbol value whose [[Description]] value is _descString_.

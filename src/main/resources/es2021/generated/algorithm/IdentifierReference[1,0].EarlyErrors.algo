@@ -1,0 +1,6 @@
+def [SYNTAX] IdentifierReference[1,0].EarlyErrors[S]<(),true>() = 0:if true 0:throw SyntaxError else 0:{}
+- id: "sec-identifiers-static-semantics-early-errors"
+- code:
+        <li>
+          It is a Syntax Error if the code matched by this production is contained in strict mode code.
+        </li>

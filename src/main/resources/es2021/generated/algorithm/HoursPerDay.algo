@@ -1,0 +1,4 @@
+def HoursPerDay() = 0:return 24i
+- id: "eqn-HoursPerDay"
+- code:
+HoursPerDay = 24

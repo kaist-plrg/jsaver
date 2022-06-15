@@ -1,0 +1,12 @@
+def [SYNTAX] StatementListItem[0,0].LexicallyScopedDeclarations[S]<(Statement),true>() = 0:{
+  0:if (is-instance-of Statement Statement10) 0:{
+    0:access LabelledStatement = (Statement "LabelledStatement")
+    0:access __x0__ = (LabelledStatement "LexicallyScopedDeclarations")
+    0:return __x0__
+  } else 0:{}
+  1:return (new [])
+}
+- id: "sec-static-semantics-lexicallyscopeddeclarations"
+- code:
+        1. If |Statement| is <emu-grammar>Statement : LabelledStatement</emu-grammar> , return LexicallyScopedDeclarations of |LabelledStatement|.
+        1. Return a new empty List.

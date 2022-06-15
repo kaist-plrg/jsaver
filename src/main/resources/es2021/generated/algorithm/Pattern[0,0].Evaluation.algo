@@ -1,0 +1,31 @@
+def [SYNTAX] Pattern[0,0].Evaluation[R]<(Disjunction),true>() = 0:{
+  0:access __x0__ = (Disjunction "Evaluation" 1i)
+  0:let m = __x0__
+  1:clo __x1__ = (str, index)[m] => 2:{
+    2:assert (= (typeof str) String)
+    4:??? "If id:{Unicode} is value:{true} , let id:{Input} be ! StringToCodePoints ( id:{str} ) . Otherwise , let id:{Input} be a List whose elements are the code units that are the elements of id:{str} . id:{Input} will be used throughout the algorithms in link:{sec-pattern-semantics} . Each element of id:{Input} is considered to be a character ."
+    5:??? "Let id:{InputLength} be the number of characters contained in id:{Input} . This alias will be used throughout the algorithms in link:{sec-pattern-semantics} ."
+    6:??? "Let id:{listIndex} be the index into id:{Input} of the character that was obtained from element id:{index} of id:{str} ."
+    7:??? "Let id:{c} be a new Continuation with parameters ( id:{y} ) that captures nothing and performs the following steps when called : in:{} out:{}"
+    10:??? "Let id:{cap} be a List of id:{NcapturingParens} value:{undefined} values , indexed 1 through id:{NcapturingParens} ."
+    11:let x = (new [listIndex, cap])
+    12:app __x2__ = (m x c)
+    12:return __x2__
+  }
+  1:return __x1__
+}
+- id: "sec-pattern"
+- code:
+          1. Evaluate |Disjunction| with 1 as its _direction_ argument to obtain a Matcher _m_.
+          1. Return a new Abstract Closure with parameters (_str_, _index_) that captures _m_ and performs the following steps when called:
+            1. Assert: Type(_str_) is String.
+            1. Assert: _index_ is a non-negative integer which is ≤ the length of _str_.
+            1. If _Unicode_ is *true*, let _Input_ be ! StringToCodePoints(_str_). Otherwise, let _Input_ be a List whose elements are the code units that are the elements of _str_. _Input_ will be used throughout the algorithms in <emu-xref href="#sec-pattern-semantics"></emu-xref>. Each element of _Input_ is considered to be a character.
+            1. Let _InputLength_ be the number of characters contained in _Input_. This alias will be used throughout the algorithms in <emu-xref href="#sec-pattern-semantics"></emu-xref>.
+            1. Let _listIndex_ be the index into _Input_ of the character that was obtained from element _index_ of _str_.
+            1. Let _c_ be a new Continuation with parameters (_y_) that captures nothing and performs the following steps when called:
+              1. Assert: _y_ is a State.
+              1. Return _y_.
+            1. Let _cap_ be a List of _NcapturingParens_ *undefined* values, indexed 1 through _NcapturingParens_.
+            1. Let _x_ be the State (_listIndex_, _cap_).
+            1. Return _m_(_x_, _c_).

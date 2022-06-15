@@ -1,0 +1,11 @@
+def [SYNTAX] CaseClause[0,1].ContainsUndefinedBreakTarget[S]<(Expression, StatementList),true>(labelSet) = 0:{
+  0:if (! (= StatementList absent)) 0:{
+    0:access __x0__ = (StatementList "ContainsUndefinedBreakTarget" labelSet)
+    0:return __x0__
+  } else 0:{}
+  1:return false
+}
+- id: "sec-static-semantics-containsundefinedbreaktarget"
+- code:
+        1. If the |StatementList| is present, return ContainsUndefinedBreakTarget of |StatementList| with argument _labelSet_.
+        1. Return *false*.

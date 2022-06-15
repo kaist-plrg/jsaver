@@ -1,0 +1,16 @@
+def GetActiveScriptOrModule() = 0:{
+  0:if (= EXECUTION_STACK.length 0i) 0:return null else 0:{}
+  1:let ec = null
+  1:let idx = EXECUTION_STACK.length
+  1:while (&& (= ec null) (< 0i idx)) 1:{
+    1:idx = (- idx 1i)
+    1:ec = EXECUTION_STACK[idx]
+    1:if (= ec.ScriptOrModule absent) 1:ec = null else 1:{}
+  }
+  2:if (= ec null) 2:return null else 2:return ec.ScriptOrModule
+}
+- id: "sec-getactivescriptormodule"
+- code:
+        1. If the execution context stack is empty, return *null*.
+        1. Let _ec_ be the topmost execution context on the execution context stack whose ScriptOrModule component is not *null*.
+        1. If no such execution context exists, return *null*. Otherwise, return _ec_'s ScriptOrModule.

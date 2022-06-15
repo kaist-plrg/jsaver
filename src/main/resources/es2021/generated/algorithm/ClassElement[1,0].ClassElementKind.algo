@@ -1,0 +1,4 @@
+def [SYNTAX] ClassElement[1,0].ClassElementKind[S]<(MethodDefinition),true>() = 0:return ~NonConstructorMethod~
+- id: "sec-static-semantics-classelementkind"
+- code:
+        1. Return ~NonConstructorMethod~.

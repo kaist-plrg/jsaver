@@ -1,0 +1,35 @@
+def %TypedArray%.prototype.sort(comparefn) = 1:{
+  1:if (! (= comparefn undefined)) 1:{
+    2:app __x0__ = (Call comparefn undefined (new [x, y]))
+    2:app __x1__ = (ToNumber [? __x0__])
+    2:let v = [? __x1__]
+    3:app __x2__ = (IsDetachedBuffer buffer)
+    3:if (= __x2__ true) 3:throw TypeError else 3:{}
+    4:if (= v NaN) 4:return 0i else 4:{}
+    5:return v
+  } else 1:{}
+  6:if (&& (= x NaN) (= y NaN)) 6:return 0i else 6:{}
+  7:if (= x NaN) 7:return 1i else 7:{}
+  8:if (= y NaN) 8:return -1i else 8:{}
+  9:if (< x y) 9:return -1i else 9:{}
+  10:if (< y x) 10:return 1i else 10:{}
+  11:if (&& (= x -0.0) (= y 0i)) 11:return -1i else 11:{}
+  12:if (&& (= x 0i) (= y -0.0)) 12:return 1i else 12:{}
+  13:return 0i
+}
+- id: "sec-%typedarray%.prototype.sort"
+- code:
+          1. Assert: Both Type(_x_) and Type(_y_) are Number or both are BigInt.
+          1. If _comparefn_ is not *undefined*, then
+            1. Let _v_ be ? ToNumber(? Call(_comparefn_, *undefined*, « _x_, _y_ »)).
+            1. If IsDetachedBuffer(_buffer_) is *true*, throw a *TypeError* exception.
+            1. If _v_ is *NaN*, return *+0*<sub>𝔽</sub>.
+            1. Return _v_.
+          1. If _x_ and _y_ are both *NaN*, return *+0*<sub>𝔽</sub>.
+          1. If _x_ is *NaN*, return *1*<sub>𝔽</sub>.
+          1. If _y_ is *NaN*, return *-1*<sub>𝔽</sub>.
+          1. If _x_ < _y_, return *-1*<sub>𝔽</sub>.
+          1. If _x_ > _y_, return *1*<sub>𝔽</sub>.
+          1. If _x_ is *-0*<sub>𝔽</sub> and _y_ is *+0*<sub>𝔽</sub>, return *-1*<sub>𝔽</sub>.
+          1. If _x_ is *+0*<sub>𝔽</sub> and _y_ is *-0*<sub>𝔽</sub>, return *1*<sub>𝔽</sub>.
+          1. Return *+0*<sub>𝔽</sub>.

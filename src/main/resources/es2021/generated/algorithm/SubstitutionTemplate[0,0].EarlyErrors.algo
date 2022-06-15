@@ -1,0 +1,6 @@
+def [SYNTAX] SubstitutionTemplate[0,0].EarlyErrors[S]<(TemplateHead, Expression, TemplateSpans),true>() = 0:??? "It is a Syntax Error if the sub:{[ Tagged ]} parameter was not set and nt:{TemplateHead} Contains nt:{NotEscapeSequence} ."
+- id: "sec-static-semantics-template-early-errors"
+- code:
+          <li>
+            It is a Syntax Error if the <sub>[Tagged]</sub> parameter was not set and |TemplateHead| Contains |NotEscapeSequence|.
+          </li>

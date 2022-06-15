@@ -1,0 +1,8 @@
+def [SYNTAX] Literal[1,0].Evaluation[R]<(BooleanLiteral),true>() = 0:{
+  0:if (= (get-syntax BooleanLiteral) "false") 0:return false else 0:{}
+  1:if (= (get-syntax BooleanLiteral) "true") 1:return true else 1:{}
+}
+- id: "sec-literals-runtime-semantics-evaluation"
+- code:
+          1. If |BooleanLiteral| is the token `false`, return *false*.
+          1. If |BooleanLiteral| is the token `true`, return *true*.

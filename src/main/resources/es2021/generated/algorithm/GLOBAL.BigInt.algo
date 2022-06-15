@@ -1,0 +1,18 @@
+def [BUILTIN] BigInt(value) = 0:{
+  0:if (! (= NewTarget undefined)) 0:throw TypeError else 0:{}
+  1:app __x0__ = (ToPrimitive value ~number~)
+  1:let prim = [? __x0__]
+  2:if (= (typeof prim) Number) 2:{
+    2:app __x1__ = (NumberToBigInt prim)
+    2:return [? __x1__]
+  } else 3:{
+    3:app __x2__ = (ToBigInt value)
+    3:return [? __x2__]
+  }
+}
+- id: "sec-bigint-constructor-number-value"
+- code:
+          1. If NewTarget is not *undefined*, throw a *TypeError* exception.
+          1. Let _prim_ be ? ToPrimitive(_value_, ~number~).
+          1. If Type(_prim_) is Number, return ? NumberToBigInt(_prim_).
+          1. Otherwise, return ? ToBigInt(_value_).

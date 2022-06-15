@@ -1,0 +1,3 @@
+def StringToBigInt(argument) = return (convert argument str2bigint)
+- id: ""
+- code:

@@ -1,0 +1,4 @@
+def [SYNTAX] Term[0,0].Evaluation[R]<(Assertion),true>(direction) = 0:??? "Return the Matcher that is the result of evaluating nt:{Assertion} ."
+- id: "sec-term"
+- code:
+          1. Return the Matcher that is the result of evaluating |Assertion|.

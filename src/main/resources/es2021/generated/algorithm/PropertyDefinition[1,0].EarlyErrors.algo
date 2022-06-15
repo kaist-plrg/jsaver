@@ -1,0 +1,6 @@
+def [SYNTAX] PropertyDefinition[1,0].EarlyErrors[S]<(CoverInitializedName),true>() = 0:if true 0:throw SyntaxError else 0:{}
+- id: "sec-object-initializer-static-semantics-early-errors"
+- code:
+          <li>
+            Always throw a Syntax Error if code matches this production.
+          </li>

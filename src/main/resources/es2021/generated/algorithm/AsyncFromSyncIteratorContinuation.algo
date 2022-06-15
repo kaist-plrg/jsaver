@@ -1,0 +1,48 @@
+def AsyncFromSyncIteratorContinuation(result, promiseCapability) = 0:{
+  0:app __x0__ = (IteratorComplete result)
+  0:let done = __x0__
+  1:if (is-completion done) 1:if (= done.Type ~normal~) 1:done = done.Value else 2:{
+    2:app __x1__ = (Call promiseCapability.Reject undefined (new [done.Value]))
+    2:if (&& (is-completion __x1__) (! (= __x1__.Type ~normal~))) 2:return __x1__ else 2:{}
+    2:return promiseCapability.Promise
+  } else 1:{}
+  1:done
+  2:app __x2__ = (IteratorValue result)
+  2:let value = __x2__
+  3:if (is-completion value) 3:if (= value.Type ~normal~) 3:value = value.Value else 4:{
+    4:app __x3__ = (Call promiseCapability.Reject undefined (new [value.Value]))
+    4:if (&& (is-completion __x3__) (! (= __x3__.Type ~normal~))) 4:return __x3__ else 4:{}
+    4:return promiseCapability.Promise
+  } else 3:{}
+  3:value
+  4:app __x4__ = (PromiseResolve INTRINSICS["%Promise%"] value)
+  4:let valueWrapper = __x4__
+  5:if (is-completion valueWrapper) 5:if (= valueWrapper.Type ~normal~) 5:valueWrapper = valueWrapper.Value else 6:{
+    6:app __x5__ = (Call promiseCapability.Reject undefined (new [valueWrapper.Value]))
+    6:if (&& (is-completion __x5__) (! (= __x5__.Type ~normal~))) 6:return __x5__ else 6:{}
+    6:return promiseCapability.Promise
+  } else 5:{}
+  5:valueWrapper
+  6:let steps = ALGORITHM["GLOBAL.AsyncfromSyncIteratorValueUnwrapFunctions"]
+  7:let length = 1i
+  8:app __x6__ = (CreateBuiltinFunction steps length "" (new ["Done"]))
+  8:let onFulfilled = [! __x6__]
+  9:onFulfilled.Done = done
+  10:app __x7__ = (PerformPromiseThen valueWrapper onFulfilled undefined promiseCapability)
+  10:[! __x7__]
+  11:return promiseCapability.Promise
+}
+- id: "sec-asyncfromsynciteratorcontinuation"
+- code:
+          1. Let _done_ be IteratorComplete(_result_).
+          1. IfAbruptRejectPromise(_done_, _promiseCapability_).
+          1. Let _value_ be IteratorValue(_result_).
+          1. IfAbruptRejectPromise(_value_, _promiseCapability_).
+          1. Let _valueWrapper_ be PromiseResolve(%Promise%, _value_).
+          1. IfAbruptRejectPromise(_valueWrapper_, _promiseCapability_).
+          1. Let _steps_ be the algorithm steps defined in <emu-xref href="#sec-async-from-sync-iterator-value-unwrap-functions" title></emu-xref>.
+          1. Let _length_ be the number of non-optional parameters of the function definition in <emu-xref href="#sec-async-from-sync-iterator-value-unwrap-functions" title></emu-xref>.
+          1. Let _onFulfilled_ be ! CreateBuiltinFunction(_steps_, _length_, *""*, « [[Done]] »).
+          1. Set _onFulfilled_.[[Done]] to _done_.
+          1. Perform ! PerformPromiseThen(_valueWrapper_, _onFulfilled_, *undefined*, _promiseCapability_).
+          1. Return _promiseCapability_.[[Promise]].

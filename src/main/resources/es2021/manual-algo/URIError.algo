@@ -1,0 +1,1 @@
+def [BUILTIN] URIError (message) = ??? "Need manual modeling"

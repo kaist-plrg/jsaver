@@ -1,0 +1,105 @@
+def ToObject(argument) = 1:{
+  1:if (= (typeof argument) Undefined) 0:throw TypeError else 1:{}
+  3:if (= (typeof argument) Null) 2:throw TypeError else 3:{}
+  5:if (= (typeof argument) Boolean) 5:{
+    4:let obj = (new OrdinaryObject("Prototype" -> INTRINSICS["%Boolean.prototype%"], "BooleanData" -> argument, "Extensible" -> true))
+    4:return obj
+  } else 5:{}
+  7:if (= (typeof argument) Number) 7:{
+    6:let obj = (new OrdinaryObject("Prototype" -> INTRINSICS["%Number.prototype%"], "NumberData" -> argument, "Extensible" -> true))
+    6:return obj
+  } else 7:{}
+  9:if (= (typeof argument) String) 9:{
+    8:let obj = (new StringExoticObject("Prototype" -> INTRINSICS["%String.prototype%"], "StringData" -> argument, "Extensible" -> true))
+    8:obj.SubMap.length = (new DataProperty("Value" -> argument.length, "Writable" -> false, "Enumerable" -> false, "Configurable" -> false))
+    8:return obj
+  } else 9:{}
+  11:if (= (typeof argument) Symbol) 11:{
+    10:let obj = (new OrdinaryObject("Prototype" -> INTRINSICS["%Symbol.prototype%"], "SymbolData" -> argument, "Extensible" -> true))
+    10:return obj
+  } else 11:{}
+  13:if (= (typeof argument) BigInt) 13:{
+    12:let obj = (new OrdinaryObject("Prototype" -> INTRINSICS["%BigInt.prototype%"], "BigIntData" -> argument, "Extensible" -> true))
+    12:return obj
+  } else 13:{}
+  15:if (= (typeof argument) Object) 14:return argument else 15:{}
+  16:assert false
+}
+- id: "table-toobject-conversions"
+- code:
+        <table>
+          <tbody>
+          <tr>
+            <th>
+              Argument Type
+            </th>
+            <th>
+              Result
+            </th>
+          </tr>
+          <tr>
+            <td>
+              Undefined
+            </td>
+            <td>
+              Throw a *TypeError* exception.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Null
+            </td>
+            <td>
+              Throw a *TypeError* exception.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Boolean
+            </td>
+            <td>
+              Return a new Boolean object whose [[BooleanData]] internal slot is set to _argument_. See <emu-xref href="#sec-boolean-objects"></emu-xref> for a description of Boolean objects.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Number
+            </td>
+            <td>
+              Return a new Number object whose [[NumberData]] internal slot is set to _argument_. See <emu-xref href="#sec-number-objects"></emu-xref> for a description of Number objects.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              String
+            </td>
+            <td>
+              Return a new String object whose [[StringData]] internal slot is set to _argument_. See <emu-xref href="#sec-string-objects"></emu-xref> for a description of String objects.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Symbol
+            </td>
+            <td>
+              Return a new Symbol object whose [[SymbolData]] internal slot is set to _argument_. See <emu-xref href="#sec-symbol-objects"></emu-xref> for a description of Symbol objects.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              BigInt
+            </td>
+            <td>
+              Return a new BigInt object whose [[BigIntData]] internal slot is set to _argument_. See <emu-xref href="#sec-bigint-objects"></emu-xref> for a description of BigInt objects.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Object
+            </td>
+            <td>
+              Return _argument_.
+            </td>
+          </tr>
+          </tbody>
+        </table>

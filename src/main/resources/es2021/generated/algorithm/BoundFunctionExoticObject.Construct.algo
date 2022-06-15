@@ -1,0 +1,27 @@
+def [METHOD] BoundFunctionExoticObject.Construct(F)(argumentsList, newTarget) = 0:{
+  0:let target = F.BoundTargetFunction
+  1:app __x0__ = (IsConstructor target)
+  1:assert (= __x0__ true)
+  2:let boundArgs = F.BoundArguments
+  3:let __x1__ = (copy-obj boundArgs)
+  3:let __x2__ = argumentsList
+  3:let __x3__ = 0i
+  3:while (< __x3__ __x2__.length) 3:{
+    3:let __x4__ = __x2__[__x3__]
+    3:__x3__ = (+ __x3__ 1i)
+    3:append __x4__ -> __x1__
+  }
+  3:let args = __x1__
+  4:app __x5__ = (SameValue F newTarget)
+  4:if (= __x5__ true) 4:newTarget = target else 4:{}
+  5:app __x6__ = (Construct target args newTarget)
+  5:return [? __x6__]
+}
+- id: "sec-bound-function-exotic-objects-construct-argumentslist-newtarget"
+- code:
+          1. Let _target_ be _F_.[[BoundTargetFunction]].
+          1. Assert: IsConstructor(_target_) is *true*.
+          1. Let _boundArgs_ be _F_.[[BoundArguments]].
+          1. Let _args_ be a List whose elements are the elements of _boundArgs_, followed by the elements of _argumentsList_.
+          1. If SameValue(_F_, _newTarget_) is *true*, set _newTarget_ to _target_.
+          1. Return ? Construct(_target_, _args_, _newTarget_).

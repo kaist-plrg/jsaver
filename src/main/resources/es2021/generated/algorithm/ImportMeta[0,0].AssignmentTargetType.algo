@@ -1,0 +1,4 @@
+def [SYNTAX] ImportMeta[0,0].AssignmentTargetType[S]<(),true>() = 0:return ~invalid~
+- id: "sec-static-semantics-assignmenttargettype"
+- code:
+        1. Return ~invalid~.

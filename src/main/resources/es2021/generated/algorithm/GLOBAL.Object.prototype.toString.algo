@@ -1,0 +1,32 @@
+def [BUILTIN] Object.prototype.toString() = 0:{
+  0:if (= this undefined) 0:return "[object Undefined]" else 0:{}
+  1:if (= this null) 1:return "[object Null]" else 1:{}
+  2:app __x0__ = (ToObject this)
+  2:let O = [! __x0__]
+  3:app __x1__ = (IsArray O)
+  3:let isArray = [? __x1__]
+  4:if (= isArray true) 4:let builtinTag = "Array" else 4:if (! (= O.ParameterMap absent)) 5:let builtinTag = "Arguments" else 4:if (! (= O.Call absent)) 6:let builtinTag = "Function" else 4:if (! (= O.ErrorData absent)) 7:let builtinTag = "Error" else 4:if (! (= O.BooleanData absent)) 8:let builtinTag = "Boolean" else 4:if (! (= O.NumberData absent)) 9:let builtinTag = "Number" else 4:if (! (= O.StringData absent)) 10:let builtinTag = "String" else 4:if (! (= O.DateValue absent)) 11:let builtinTag = "Date" else 4:if (! (= O.RegExpMatcher absent)) 12:let builtinTag = "RegExp" else 4:let builtinTag = "Object"
+  14:app __x2__ = (Get O SYMBOL_toStringTag)
+  14:let tag = [? __x2__]
+  15:if (! (= (typeof tag) String)) 15:tag = builtinTag else 15:{}
+  16:return (+ (+ "[object " tag) "]")
+}
+- id: "sec-object.prototype.tostring"
+- code:
+          1. If the *this* value is *undefined*, return *"[object Undefined]"*.
+          1. If the *this* value is *null*, return *"[object Null]"*.
+          1. Let _O_ be ! ToObject(*this* value).
+          1. Let _isArray_ be ? IsArray(_O_).
+          1. If _isArray_ is *true*, let _builtinTag_ be *"Array"*.
+          1. Else if _O_ has a [[ParameterMap]] internal slot, let _builtinTag_ be *"Arguments"*.
+          1. Else if _O_ has a [[Call]] internal method, let _builtinTag_ be *"Function"*.
+          1. Else if _O_ has an [[ErrorData]] internal slot, let _builtinTag_ be *"Error"*.
+          1. Else if _O_ has a [[BooleanData]] internal slot, let _builtinTag_ be *"Boolean"*.
+          1. Else if _O_ has a [[NumberData]] internal slot, let _builtinTag_ be *"Number"*.
+          1. Else if _O_ has a [[StringData]] internal slot, let _builtinTag_ be *"String"*.
+          1. Else if _O_ has a [[DateValue]] internal slot, let _builtinTag_ be *"Date"*.
+          1. Else if _O_ has a [[RegExpMatcher]] internal slot, let _builtinTag_ be *"RegExp"*.
+          1. Else, let _builtinTag_ be *"Object"*.
+          1. Let _tag_ be ? Get(_O_, @@toStringTag).
+          1. If Type(_tag_) is not String, set _tag_ to _builtinTag_.
+          1. Return the string-concatenation of *"[object "*, _tag_, and *"]"*.

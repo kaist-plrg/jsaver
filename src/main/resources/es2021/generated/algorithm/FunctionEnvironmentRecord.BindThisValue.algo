@@ -1,0 +1,14 @@
+def [METHOD] FunctionEnvironmentRecord.BindThisValue(envRec)(V) = 0:{
+  0:assert (! (= envRec.ThisBindingStatus ~lexical~))
+  1:if (= envRec.ThisBindingStatus ~initialized~) 1:throw ReferenceError else 1:{}
+  2:envRec.ThisValue = V
+  3:envRec.ThisBindingStatus = ~initialized~
+  4:return V
+}
+- id: "sec-bindthisvalue"
+- code:
+            1. Assert: _envRec_.[[ThisBindingStatus]] is not ~lexical~.
+            1. If _envRec_.[[ThisBindingStatus]] is ~initialized~, throw a *ReferenceError* exception.
+            1. Set _envRec_.[[ThisValue]] to _V_.
+            1. Set _envRec_.[[ThisBindingStatus]] to ~initialized~.
+            1. Return _V_.

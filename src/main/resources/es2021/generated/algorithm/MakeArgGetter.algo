@@ -1,0 +1,17 @@
+def MakeArgGetter(name, env) = {
+  0:let steps = ALGORITHM["GLOBAL.ArgGetter"]
+  1:let length = 0i
+  2:app getter = (CreateBuiltinFunction steps length "" (new ["Name", "Env"]))
+  2:[! getter]
+  3:getter.Name = name
+  4:getter.Env = env
+  5:return getter
+}
+- id: "sec-makearggetter"
+- code:
+            1. Let _steps_ be the steps of an ArgGetter function as specified below.
+            1. Let _length_ be the number of non-optional parameters of an ArgGetter function as specified below.
+            1. Let _getter_ be ! CreateBuiltinFunction(_steps_, _length_, *""*, « [[Name]], [[Env]] »).
+            1. Set _getter_.[[Name]] to _name_.
+            1. Set _getter_.[[Env]] to _env_.
+            1. Return _getter_.

@@ -1,0 +1,4 @@
+def [SYNTAX] Block[0,0].Evaluation[R]<(StatementList),true>() = 0:return ~empty~
+- id: "sec-block-runtime-semantics-evaluation"
+- code:
+        1. Return NormalCompletion(~empty~).

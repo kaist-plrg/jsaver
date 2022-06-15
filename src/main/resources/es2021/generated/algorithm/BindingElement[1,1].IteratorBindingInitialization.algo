@@ -1,0 +1,41 @@
+def [SYNTAX] BindingElement[1,1].IteratorBindingInitialization[R]<(BindingPattern, Initializer),true>(iteratorRecord, environment) = 0:{
+  0:if (= iteratorRecord.Done false) 0:{
+    1:app __x0__ = (IteratorStep iteratorRecord)
+    1:let next = __x0__
+    2:app __x1__ = (IsAbruptCompletion next)
+    2:if __x1__ 2:iteratorRecord.Done = true else 2:{}
+    3:[? next]
+    4:if (= next false) 4:iteratorRecord.Done = true else 5:{
+      6:app __x2__ = (IteratorValue next)
+      6:let v = __x2__
+      7:app __x3__ = (IsAbruptCompletion v)
+      7:if __x3__ 7:iteratorRecord.Done = true else 7:{}
+      8:[? v]
+    }
+  } else 0:{}
+  9:if (= iteratorRecord.Done true) 9:let v = undefined else 9:{}
+  10:if (&& (! (= Initializer absent)) (= v undefined)) 10:{
+    11:access __x4__ = (Initializer "Evaluation")
+    11:let defaultValue = __x4__
+    12:app __x5__ = (GetValue defaultValue)
+    12:v = [? __x5__]
+  } else 10:{}
+  13:access __x6__ = (BindingPattern "BindingInitialization" v environment)
+  13:return __x6__
+}
+- id: "sec-runtime-semantics-iteratorbindinginitialization"
+- code:
+        1. If _iteratorRecord_.[[Done]] is *false*, then
+          1. Let _next_ be IteratorStep(_iteratorRecord_).
+          1. If _next_ is an abrupt completion, set _iteratorRecord_.[[Done]] to *true*.
+          1. ReturnIfAbrupt(_next_).
+          1. If _next_ is *false*, set _iteratorRecord_.[[Done]] to *true*.
+          1. Else,
+            1. Let _v_ be IteratorValue(_next_).
+            1. If _v_ is an abrupt completion, set _iteratorRecord_.[[Done]] to *true*.
+            1. ReturnIfAbrupt(_v_).
+        1. If _iteratorRecord_.[[Done]] is *true*, let _v_ be *undefined*.
+        1. If |Initializer| is present and _v_ is *undefined*, then
+          1. Let _defaultValue_ be the result of evaluating |Initializer|.
+          1. Set _v_ to ? GetValue(_defaultValue_).
+        1. Return the result of performing BindingInitialization of |BindingPattern| with _v_ and _environment_ as the arguments.

@@ -1,0 +1,17 @@
+def Yield(value) = 0:{
+  0:app __x0__ = (GetGeneratorKind)
+  0:let generatorKind = [! __x0__]
+  1:if (= generatorKind ~async~) 1:{
+    1:app __x1__ = (AsyncGeneratorYield value)
+    1:return [? __x1__]
+  } else 2:{
+    2:app __x2__ = (CreateIterResultObject value false)
+    2:app __x3__ = (GeneratorYield [! __x2__])
+    2:return [? __x3__]
+  }
+}
+- id: "sec-yield"
+- code:
+          1. Let _generatorKind_ be ! GetGeneratorKind().
+          1. If _generatorKind_ is ~async~, return ? AsyncGeneratorYield(_value_).
+          1. Otherwise, return ? GeneratorYield(! CreateIterResultObject(_value_, *false*)).

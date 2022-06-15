@@ -1,0 +1,45 @@
+def [BUILTIN] String.prototype[SYMBOL_iterator]() = 0:{
+  0:app __x0__ = (RequireObjectCoercible this)
+  0:let O = [? __x0__]
+  1:app __x1__ = (ToString O)
+  1:let s = [? __x1__]
+  2:clo __x2__ = ()[s] => 3:{
+    3:let position = 0i
+    4:let len = s.length
+    5:while (< position len) 5:{
+      6:app __x3__ = (CodePointAt s position)
+      6:let cp = [! __x3__]
+      7:let nextIndex = (+ position cp.CodeUnitCount)
+      8:let __x4__ = ""
+      8:let __x5__ = position
+      8:while (< __x5__ nextIndex) 8:{
+        8:access __x6__ = (s __x5__)
+        8:__x4__ = (+ __x4__ __x6__)
+        8:__x5__ = (+ __x5__ 1i)
+      }
+      8:let resultString = __x4__
+      9:position = nextIndex
+      10:app __x7__ = (Yield resultString)
+      10:[? __x7__]
+    }
+    11:return undefined
+  }
+  2:let closure = __x2__
+  12:app __x8__ = (CreateIteratorFromClosure closure "%StringIteratorPrototype%" INTRINSICS["%StringIteratorPrototype%"])
+  12:return [! __x8__]
+}
+- id: "sec-string.prototype-@@iterator"
+- code:
+          1. Let _O_ be ? RequireObjectCoercible(*this* value).
+          1. Let _s_ be ? ToString(_O_).
+          1. Let _closure_ be a new Abstract Closure with no parameters that captures _s_ and performs the following steps when called:
+            1. Let _position_ be 0.
+            1. Let _len_ be the length of _s_.
+            1. Repeat, while _position_ < _len_,
+              1. Let _cp_ be ! CodePointAt(_s_, _position_).
+              1. Let _nextIndex_ be _position_ + _cp_.[[CodeUnitCount]].
+              1. Let _resultString_ be the substring of _s_ from _position_ to _nextIndex_.
+              1. Set _position_ to _nextIndex_.
+              1. Perform ? Yield(_resultString_).
+            1. Return *undefined*.
+          1. Return ! CreateIteratorFromClosure(_closure_, *"%StringIteratorPrototype%"*, %StringIteratorPrototype%).

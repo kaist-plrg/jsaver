@@ -1,0 +1,22 @@
+def [BUILTIN] String(value) = 0:{
+  0:if (= value absent) 0:let s = "" else 1:{
+    2:if (&& (= NewTarget undefined) (= (typeof value) Symbol)) 2:{
+      2:app __x0__ = (SymbolDescriptiveString value)
+      2:return __x0__
+    } else 2:{}
+    3:app __x1__ = (ToString value)
+    3:let s = [? __x1__]
+  }
+  4:if (= NewTarget undefined) 4:return s else 4:{}
+  5:app __x2__ = (GetPrototypeFromConstructor NewTarget "%String.prototype%")
+  5:app __x3__ = (StringCreate s [? __x2__])
+  5:return [! __x3__]
+}
+- id: "sec-string-constructor-string-value"
+- code:
+          1. If _value_ is not present, let _s_ be the empty String.
+          1. Else,
+            1. If NewTarget is *undefined* and Type(_value_) is Symbol, return SymbolDescriptiveString(_value_).
+            1. Let _s_ be ? ToString(_value_).
+          1. If NewTarget is *undefined*, return _s_.
+          1. Return ! StringCreate(_s_, ? GetPrototypeFromConstructor(NewTarget, *"%String.prototype%"*)).

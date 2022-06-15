@@ -1,0 +1,33 @@
+def IsInTailPosition (call) = {
+  if false return false else {}
+  let __c__ = false
+  let __b__ = call
+  while (&& (! __c__) (! (= __b__ absent))) {
+    __c__ = (|| __c__ (is-instance-of __b__ FunctionBody))
+    __c__ = (|| __c__ (is-instance-of __b__ ConciseBody))
+    __c__ = (|| __c__ (is-instance-of __b__ AsyncConciseBody))
+    if (! __c__) access __b__ = (__b__ "parent") else {}
+  }
+  if (! __c__) return false else {}
+  let body = __b__
+  access __p__ = (body "parent")
+  if (! (= __p__ absent)) {
+    if (&& (is-instance-of body FunctionBody) (is-instance-of __p__ GeneratorBody)) return false else {}
+    if (&& (is-instance-of body FunctionBody) (is-instance-of __p__ AsyncFunctionBody)) return false else {}
+    if (&& (is-instance-of body FunctionBody) (is-instance-of __p__ AsyncGeneratorBody)) return false else {}
+  } else {}
+  if (is-instance-of body AsyncConciseBody) return false else {}
+  access __r__ = (body "HasCallInTailPosition" call)
+  return __r__
+}
+- id: "sec-isintailposition"
+- code:
+        1. Assert: _call_ is a Parse Node.
+        1. If the source code matching _call_ is non-strict code, return *false*.
+        1. If _call_ is not contained within a |FunctionBody|, |ConciseBody|, or |AsyncConciseBody|, return *false*.
+        1. Let _body_ be the |FunctionBody|, |ConciseBody|, or |AsyncConciseBody| that most closely contains _call_.
+        1. If _body_ is the |FunctionBody| of a |GeneratorBody|, return *false*.
+        1. If _body_ is the |FunctionBody| of an |AsyncFunctionBody|, return *false*.
+        1. If _body_ is the |FunctionBody| of an |AsyncGeneratorBody|, return *false*.
+        1. If _body_ is an |AsyncConciseBody|, return *false*.
+        1. Return the result of HasCallInTailPosition of _body_ with argument _call_.

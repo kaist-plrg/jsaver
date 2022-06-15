@@ -1,0 +1,14 @@
+def LoopContinues(completion, labelSet) = 0:{
+  0:if (= completion.Type ~normal~) 0:return true else 0:{}
+  1:if (! (= completion.Type ~continue~)) 1:return false else 1:{}
+  2:if (= completion.Target ~empty~) 2:return true else 2:{}
+  3:if (contains labelSet completion.Target) 3:return true else 3:{}
+  4:return false
+}
+- id: "sec-loopcontinues"
+- code:
+          1. If _completion_.[[Type]] is ~normal~, return *true*.
+          1. If _completion_.[[Type]] is not ~continue~, return *false*.
+          1. If _completion_.[[Target]] is ~empty~, return *true*.
+          1. If _completion_.[[Target]] is an element of _labelSet_, return *true*.
+          1. Return *false*.

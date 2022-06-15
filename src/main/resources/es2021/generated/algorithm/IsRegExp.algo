@@ -1,0 +1,18 @@
+def IsRegExp(argument) = 0:{
+  0:if (! (= (typeof argument) Object)) 0:return false else 0:{}
+  1:app __x0__ = (Get argument SYMBOL_match)
+  1:let matcher = [? __x0__]
+  2:if (! (= matcher undefined)) 2:{
+    2:app __x1__ = (ToBoolean matcher)
+    2:return [! __x1__]
+  } else 2:{}
+  3:if (! (= argument.RegExpMatcher absent)) 3:return true else 3:{}
+  4:return false
+}
+- id: "sec-isregexp"
+- code:
+        1. If Type(_argument_) is not Object, return *false*.
+        1. Let _matcher_ be ? Get(_argument_, @@match).
+        1. If _matcher_ is not *undefined*, return ! ToBoolean(_matcher_).
+        1. If _argument_ has a [[RegExpMatcher]] internal slot, return *true*.
+        1. Return *false*.

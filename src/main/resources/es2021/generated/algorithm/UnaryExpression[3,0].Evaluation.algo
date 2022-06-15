@@ -1,0 +1,19 @@
+def [SYNTAX] UnaryExpression[3,0].Evaluation[R]<(UnaryExpression),false>() = 0:{
+  0:access __x0__ = (UnaryExpression "Evaluation")
+  0:let val = __x0__
+  1:if (is-instance-of val ReferenceRecord) 1:{
+    2:app __x1__ = (IsUnresolvableReference val)
+    2:if (= __x1__ true) 2:return "undefined" else 2:{}
+  } else 1:{}
+  3:app __x2__ = (GetValue val)
+  3:val = [? __x2__]
+  4:let t = (typeof val)
+  4:if (= t Undefined) 4:return "undefined" else 4:if (= t Null) 5:return "object" else 4:if (= t Boolean) 6:return "boolean" else 4:if (= t Number) 7:return "number" else 4:if (= t String) 8:return "string" else 4:if (= t Symbol) 9:return "symbol" else 4:if (= t BigInt) 10:return "bigint" else 4:if (= t Object) 11:if (= val.Call absent) 11:return "object" else 11:return "function" else 4:??? "invalid for `typeof` operator"
+}
+- id: "sec-typeof-operator-runtime-semantics-evaluation"
+- code:
+          1. Let _val_ be the result of evaluating |UnaryExpression|.
+          1. If _val_ is a Reference Record, then
+            1. If IsUnresolvableReference(_val_) is *true*, return *"undefined"*.
+          1. Set _val_ to ? GetValue(_val_).
+          1. Return a String according to <emu-xref href="#table-typeof-operator-results"></emu-xref>.

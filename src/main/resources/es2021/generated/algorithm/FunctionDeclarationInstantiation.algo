@@ -1,0 +1,285 @@
+def FunctionDeclarationInstantiation(func, argumentsList) = 0:{
+  0:let calleeContext = CONTEXT
+  1:let code = func.ECMAScriptCode
+  2:let strict = func.Strict
+  3:let formals = func.FormalParameters
+  4:access __x0__ = (formals "BoundNames")
+  4:let parameterNames = __x0__
+  5:app __x1__ = (IsDuplicate parameterNames)
+  5:if __x1__ 5:let hasDuplicates = true else 5:let hasDuplicates = false
+  6:access __x2__ = (formals "IsSimpleParameterList")
+  6:let simpleParameterList = __x2__
+  7:access __x3__ = (formals "ContainsExpression")
+  7:let hasParameterExpressions = __x3__
+  8:access __x4__ = (code "VarDeclaredNames")
+  8:let varNames = __x4__
+  9:access __x5__ = (code "VarScopedDeclarations")
+  9:let varDeclarations = __x5__
+  10:access __x6__ = (code "LexicallyDeclaredNames")
+  10:let lexicalNames = __x6__
+  11:let functionNames = (new [])
+  12:let functionsToInitialize = (new [])
+  13:let __x7__ = varDeclarations
+  13:let __x8__ = __x7__.length
+  13:while (< 0i __x8__) 13:{
+    13:__x8__ = (- __x8__ 1i)
+    13:let d = __x7__[__x8__]
+    14:if (! (|| (|| (is-instance-of d VariableDeclaration) (is-instance-of d ForBinding)) (is-instance-of d BindingIdentifier))) 14:{
+      15:assert (|| (|| (|| (is-instance-of d FunctionDeclaration) (is-instance-of d GeneratorDeclaration)) (is-instance-of d AsyncFunctionDeclaration)) (is-instance-of d AsyncGeneratorDeclaration))
+      16:access __x9__ = (d "BoundNames")
+      16:let fn = __x9__[0i]
+      17:if (! (contains functionNames fn)) 17:{
+        18:prepend fn -> functionNames
+        20:prepend d -> functionsToInitialize
+      } else 17:{}
+    } else 14:{}
+  }
+  21:let argumentsObjectNeeded = true
+  22:if (= func.ThisMode ~lexical~) 24:argumentsObjectNeeded = false else 22:if (contains parameterNames "arguments") 26:argumentsObjectNeeded = false else 22:if (= hasParameterExpressions false) 28:if (|| (contains functionNames "arguments") (contains lexicalNames "arguments")) 29:argumentsObjectNeeded = false else 28:{} else 22:{}
+  30:if (|| (= strict true) (= hasParameterExpressions false)) 30:{
+    32:access __x10__ = (calleeContext "LexicalEnvironment")
+    32:let env = __x10__
+  } else 33:{
+    35:access __x11__ = (calleeContext "LexicalEnvironment")
+    35:let calleeEnv = __x11__
+    36:app __x12__ = (NewDeclarativeEnvironment calleeEnv)
+    36:let env = __x12__
+    37:access __x13__ = (calleeContext "VariableEnvironment")
+    37:assert (= __x13__ calleeEnv)
+    38:calleeContext.LexicalEnvironment = env
+  }
+  39:let __x14__ = parameterNames
+  39:let __x15__ = 0i
+  39:while (< __x15__ __x14__.length) 39:{
+    39:let paramName = __x14__[__x15__]
+    39:__x15__ = (+ __x15__ 1i)
+    40:app __x16__ = (env.HasBinding env paramName)
+    40:let alreadyDeclared = __x16__
+    42:if (= alreadyDeclared false) 42:{
+      43:app __x17__ = (env.CreateMutableBinding env paramName false)
+      43:[! __x17__]
+      44:if (= hasDuplicates true) 44:{
+        45:app __x18__ = (env.InitializeBinding env paramName undefined)
+        45:[! __x18__]
+      } else 44:{}
+    } else 42:{}
+  }
+  46:if (= argumentsObjectNeeded true) 46:{
+    47:if (|| (= strict true) (= simpleParameterList false)) 47:{
+      48:app __x19__ = (CreateUnmappedArgumentsObject argumentsList)
+      48:let ao = __x19__
+    } else 49:{
+      51:app __x20__ = (CreateMappedArgumentsObject func formals argumentsList env)
+      51:let ao = __x20__
+    }
+    52:if (= strict true) 52:{
+      53:app __x21__ = (env.CreateImmutableBinding env "arguments" false)
+      53:[! __x21__]
+    } else 54:{
+      55:app __x22__ = (env.CreateMutableBinding env "arguments" false)
+      55:[! __x22__]
+    }
+    56:app __x23__ = (env.InitializeBinding env "arguments" ao)
+    56:__x23__
+    57:append "arguments" -> parameterNames
+    57:let parameterBindings = parameterNames
+  } else 46:let parameterBindings = parameterNames
+  60:app __x24__ = (CreateListIteratorRecord argumentsList)
+  60:let iteratorRecord = __x24__
+  61:if (= hasDuplicates true) 61:{
+    62:access __x25__ = (formals "IteratorBindingInitialization" iteratorRecord undefined)
+    62:[? __x25__]
+  } else 63:{
+    64:access __x26__ = (formals "IteratorBindingInitialization" iteratorRecord env)
+    64:[? __x26__]
+  }
+  65:if (= hasParameterExpressions false) 65:{
+    67:let instantiatedVarNames = (copy-obj parameterBindings)
+    68:let __x27__ = varNames
+    68:let __x28__ = 0i
+    68:while (< __x28__ __x27__.length) 68:{
+      68:let n = __x27__[__x28__]
+      68:__x28__ = (+ __x28__ 1i)
+      69:if (! (contains instantiatedVarNames n)) 69:{
+        70:append n -> instantiatedVarNames
+        71:app __x29__ = (env.CreateMutableBinding env n false)
+        71:[! __x29__]
+        72:app __x30__ = (env.InitializeBinding env n undefined)
+        72:__x30__
+      } else 69:{}
+    }
+    73:let varEnv = env
+  } else 74:{
+    76:app __x31__ = (NewDeclarativeEnvironment env)
+    76:let varEnv = __x31__
+    77:calleeContext.VariableEnvironment = varEnv
+    78:let instantiatedVarNames = (new [])
+    79:let __x32__ = varNames
+    79:let __x33__ = 0i
+    79:while (< __x33__ __x32__.length) 79:{
+      79:let n = __x32__[__x33__]
+      79:__x33__ = (+ __x33__ 1i)
+      80:if (! (contains instantiatedVarNames n)) 80:{
+        81:append n -> instantiatedVarNames
+        82:app __x34__ = (varEnv.CreateMutableBinding varEnv n false)
+        82:[! __x34__]
+        83:if (|| (! (contains parameterBindings n)) (contains functionNames n)) 83:let initialValue = undefined else 84:{
+          85:app __x35__ = (env.GetBindingValue env n false)
+          85:let initialValue = [! __x35__]
+        }
+        86:app __x36__ = (varEnv.InitializeBinding varEnv n initialValue)
+        86:__x36__
+      } else 80:{}
+    }
+  }
+  89:if (= strict false) 89:{
+    90:app __x37__ = (NewDeclarativeEnvironment varEnv)
+    90:let lexEnv = __x37__
+  } else 89:let lexEnv = varEnv
+  93:calleeContext.LexicalEnvironment = lexEnv
+  94:access __x38__ = (code "LexicallyScopedDeclarations")
+  94:let lexDeclarations = __x38__
+  95:let __x39__ = lexDeclarations
+  95:let __x40__ = 0i
+  95:while (< __x40__ __x39__.length) 95:{
+    95:let d = __x39__[__x40__]
+    95:__x40__ = (+ __x40__ 1i)
+    97:access __x41__ = (d "BoundNames")
+    97:let __x42__ = __x41__
+    97:let __x43__ = 0i
+    97:while (< __x43__ __x42__.length) 97:{
+      97:let dn = __x42__[__x43__]
+      97:__x43__ = (+ __x43__ 1i)
+      98:access __x44__ = (d "IsConstantDeclaration")
+      98:if (= __x44__ true) 98:{
+        99:app __x45__ = (lexEnv.CreateImmutableBinding lexEnv dn true)
+        99:[! __x45__]
+      } else 100:{
+        101:app __x46__ = (lexEnv.CreateMutableBinding lexEnv dn false)
+        101:[! __x46__]
+      }
+    }
+  }
+  102:let __x47__ = functionsToInitialize
+  102:let __x48__ = 0i
+  102:while (< __x48__ __x47__.length) 102:{
+    102:let f = __x47__[__x48__]
+    102:__x48__ = (+ __x48__ 1i)
+    103:access __x49__ = (f "BoundNames")
+    103:let fn = __x49__[0i]
+    104:access __x50__ = (f "InstantiateFunctionObject" lexEnv)
+    104:let fo = __x50__
+    105:app __x51__ = (varEnv.SetMutableBinding varEnv fn fo false)
+    105:[! __x51__]
+  }
+  106:return ~empty~
+}
+- id: "sec-functiondeclarationinstantiation"
+- code:
+        1. Let _calleeContext_ be the running execution context.
+        1. Let _code_ be _func_.[[ECMAScriptCode]].
+        1. Let _strict_ be _func_.[[Strict]].
+        1. Let _formals_ be _func_.[[FormalParameters]].
+        1. Let _parameterNames_ be the BoundNames of _formals_.
+        1. If _parameterNames_ has any duplicate entries, let _hasDuplicates_ be *true*. Otherwise, let _hasDuplicates_ be *false*.
+        1. Let _simpleParameterList_ be IsSimpleParameterList of _formals_.
+        1. Let _hasParameterExpressions_ be ContainsExpression of _formals_.
+        1. Let _varNames_ be the VarDeclaredNames of _code_.
+        1. Let _varDeclarations_ be the VarScopedDeclarations of _code_.
+        1. Let _lexicalNames_ be the LexicallyDeclaredNames of _code_.
+        1. Let _functionNames_ be a new empty List.
+        1. Let _functionsToInitialize_ be a new empty List.
+        1. For each element _d_ of _varDeclarations_, in reverse List order, do
+          1. If _d_ is neither a |VariableDeclaration| nor a |ForBinding| nor a |BindingIdentifier|, then
+            1. Assert: _d_ is either a |FunctionDeclaration|, a |GeneratorDeclaration|, an |AsyncFunctionDeclaration|, or an |AsyncGeneratorDeclaration|.
+            1. Let _fn_ be the sole element of the BoundNames of _d_.
+            1. If _fn_ is not an element of _functionNames_, then
+              1. Insert _fn_ as the first element of _functionNames_.
+              1. NOTE: If there are multiple function declarations for the same name, the last declaration is used.
+              1. Insert _d_ as the first element of _functionsToInitialize_.
+        1. Let _argumentsObjectNeeded_ be *true*.
+        1. If _func_.[[ThisMode]] is ~lexical~, then
+          1. NOTE: Arrow functions never have an arguments objects.
+          1. Set _argumentsObjectNeeded_ to *false*.
+        1. Else if *"arguments"* is an element of _parameterNames_, then
+          1. Set _argumentsObjectNeeded_ to *false*.
+        1. Else if _hasParameterExpressions_ is *false*, then
+          1. If *"arguments"* is an element of _functionNames_ or if *"arguments"* is an element of _lexicalNames_, then
+            1. Set _argumentsObjectNeeded_ to *false*.
+        1. If _strict_ is *true* or if _hasParameterExpressions_ is *false*, then
+          1. NOTE: Only a single Environment Record is needed for the parameters and top-level vars.
+          1. Let _env_ be the LexicalEnvironment of _calleeContext_.
+        1. Else,
+          1. NOTE: A separate Environment Record is needed to ensure that bindings created by direct eval calls in the formal parameter list are outside the environment where parameters are declared.
+          1. Let _calleeEnv_ be the LexicalEnvironment of _calleeContext_.
+          1. Let _env_ be NewDeclarativeEnvironment(_calleeEnv_).
+          1. Assert: The VariableEnvironment of _calleeContext_ is _calleeEnv_.
+          1. Set the LexicalEnvironment of _calleeContext_ to _env_.
+        1. For each String _paramName_ of _parameterNames_, do
+          1. Let _alreadyDeclared_ be _env_.HasBinding(_paramName_).
+          1. NOTE: Early errors ensure that duplicate parameter names can only occur in non-strict functions that do not have parameter default values or rest parameters.
+          1. If _alreadyDeclared_ is *false*, then
+            1. Perform ! _env_.CreateMutableBinding(_paramName_, *false*).
+            1. If _hasDuplicates_ is *true*, then
+              1. Perform ! _env_.InitializeBinding(_paramName_, *undefined*).
+        1. If _argumentsObjectNeeded_ is *true*, then
+          1. If _strict_ is *true* or if _simpleParameterList_ is *false*, then
+            1. Let _ao_ be CreateUnmappedArgumentsObject(_argumentsList_).
+          1. Else,
+            1. NOTE: A mapped argument object is only provided for non-strict functions that don't have a rest parameter, any parameter default value initializers, or any destructured parameters.
+            1. Let _ao_ be CreateMappedArgumentsObject(_func_, _formals_, _argumentsList_, _env_).
+          1. If _strict_ is *true*, then
+            1. Perform ! _env_.CreateImmutableBinding(*"arguments"*, *false*).
+          1. Else,
+            1. Perform ! _env_.CreateMutableBinding(*"arguments"*, *false*).
+          1. Call _env_.InitializeBinding(*"arguments"*, _ao_).
+          1. Let _parameterBindings_ be a List whose elements are the elements of _parameterNames_, followed by *"arguments"*.
+        1. Else,
+          1. Let _parameterBindings_ be _parameterNames_.
+        1. Let _iteratorRecord_ be CreateListIteratorRecord(_argumentsList_).
+        1. If _hasDuplicates_ is *true*, then
+          1. Perform ? IteratorBindingInitialization for _formals_ with _iteratorRecord_ and *undefined* as arguments.
+        1. Else,
+          1. Perform ? IteratorBindingInitialization for _formals_ with _iteratorRecord_ and _env_ as arguments.
+        1. If _hasParameterExpressions_ is *false*, then
+          1. NOTE: Only a single Environment Record is needed for the parameters and top-level vars.
+          1. Let _instantiatedVarNames_ be a copy of the List _parameterBindings_.
+          1. For each element _n_ of _varNames_, do
+            1. If _n_ is not an element of _instantiatedVarNames_, then
+              1. Append _n_ to _instantiatedVarNames_.
+              1. Perform ! _env_.CreateMutableBinding(_n_, *false*).
+              1. Call _env_.InitializeBinding(_n_, *undefined*).
+          1. Let _varEnv_ be _env_.
+        1. Else,
+          1. NOTE: A separate Environment Record is needed to ensure that closures created by expressions in the formal parameter list do not have visibility of declarations in the function body.
+          1. Let _varEnv_ be NewDeclarativeEnvironment(_env_).
+          1. Set the VariableEnvironment of _calleeContext_ to _varEnv_.
+          1. Let _instantiatedVarNames_ be a new empty List.
+          1. For each element _n_ of _varNames_, do
+            1. If _n_ is not an element of _instantiatedVarNames_, then
+              1. Append _n_ to _instantiatedVarNames_.
+              1. Perform ! _varEnv_.CreateMutableBinding(_n_, *false*).
+              1. If _n_ is not an element of _parameterBindings_ or if _n_ is an element of _functionNames_, let _initialValue_ be *undefined*.
+              1. Else,
+                1. Let _initialValue_ be ! _env_.GetBindingValue(_n_, *false*).
+              1. Call _varEnv_.InitializeBinding(_n_, _initialValue_).
+              1. NOTE: A var with the same name as a formal parameter initially has the same value as the corresponding initialized parameter.
+        1. [id="step-functiondeclarationinstantiation-web-compat-insertion-point"] NOTE: Annex <emu-xref href="#sec-web-compat-functiondeclarationinstantiation"></emu-xref> adds additional steps at this point.
+        1. If _strict_ is *false*, then
+          1. Let _lexEnv_ be NewDeclarativeEnvironment(_varEnv_).
+          1. NOTE: Non-strict functions use a separate Environment Record for top-level lexical declarations so that a direct eval can determine whether any var scoped declarations introduced by the eval code conflict with pre-existing top-level lexically scoped declarations. This is not needed for strict functions because a strict direct eval always places all declarations into a new Environment Record.
+        1. Else, let _lexEnv_ be _varEnv_.
+        1. Set the LexicalEnvironment of _calleeContext_ to _lexEnv_.
+        1. Let _lexDeclarations_ be the LexicallyScopedDeclarations of _code_.
+        1. For each element _d_ of _lexDeclarations_, do
+          1. NOTE: A lexically declared name cannot be the same as a function/generator declaration, formal parameter, or a var name. Lexically declared names are only instantiated here but not initialized.
+          1. For each element _dn_ of the BoundNames of _d_, do
+            1. If IsConstantDeclaration of _d_ is *true*, then
+              1. Perform ! _lexEnv_.CreateImmutableBinding(_dn_, *true*).
+            1. Else,
+              1. Perform ! _lexEnv_.CreateMutableBinding(_dn_, *false*).
+        1. For each Parse Node _f_ of _functionsToInitialize_, do
+          1. Let _fn_ be the sole element of the BoundNames of _f_.
+          1. Let _fo_ be InstantiateFunctionObject of _f_ with argument _lexEnv_.
+          1. Perform ! _varEnv_.SetMutableBinding(_fn_, _fo_, *false*).
+        1. Return NormalCompletion(~empty~).

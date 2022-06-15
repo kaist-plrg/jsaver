@@ -1,0 +1,13 @@
+def [SYNTAX] ClassElementList[1,0].NonConstructorMethodDefinitions[S]<(ClassElementList, ClassElement),false>() = 0:{
+  0:access __x0__ = (ClassElementList "NonConstructorMethodDefinitions")
+  0:let list = __x0__
+  1:access __x1__ = (ClassElement "ClassElementKind")
+  1:if (= __x1__ ~NonConstructorMethod~) 2:append ClassElement -> list else 1:{}
+  3:return list
+}
+- id: "sec-static-semantics-nonconstructormethoddefinitions"
+- code:
+        1. Let _list_ be NonConstructorMethodDefinitions of |ClassElementList|.
+        1. If ClassElementKind of |ClassElement| is ~NonConstructorMethod~, then
+          1. Append |ClassElement| to the end of _list_.
+        1. Return _list_.

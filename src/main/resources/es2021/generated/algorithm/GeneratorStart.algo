@@ -1,0 +1,52 @@
+def GeneratorStart(generator, generatorBody) = 0:{
+  0:assert (= generator.GeneratorState undefined)
+  1:let genContext = CONTEXT
+  2:genContext.Generator = generator
+  3:cont __x0__ = () [=>] 3:{
+    4:if (= (typeof generatorBody) "AST") 4:{
+      5:access __x1__ = (generatorBody "Evaluation")
+      5:let result = __x1__
+    } else 6:{
+      8:app __x2__ = (generatorBody)
+      8:let result = __x2__
+    }
+    9:RET_CONT = (pop genContext.ReturnCont 0i)
+    10:if (= EXECUTION_STACK[(- EXECUTION_STACK.length 1i)] genContext) 10:(pop EXECUTION_STACK (- EXECUTION_STACK.length 1i)) else 10:{}
+    10:CONTEXT = EXECUTION_STACK[(- EXECUTION_STACK.length 1i)]
+    11:generator.GeneratorState = ~completed~
+    13:if (= result.Type ~normal~) 13:let resultValue = undefined else 13:if (= result.Type ~return~) 14:let resultValue = result.Value else 15:{
+      16:assert (= result.Type ~throw~)
+      17:app _ = (RET_CONT result)
+    }
+    18:app __x3__ = (CreateIterResultObject resultValue true)
+    18:app _ = (RET_CONT __x3__)
+  }
+  3:genContext.ResumeCont = __x0__
+  19:generator.GeneratorContext = genContext
+  20:generator.GeneratorState = ~suspendedStart~
+  21:return undefined
+}
+- id: "sec-generatorstart"
+- code:
+          1. Assert: The value of _generator_.[[GeneratorState]] is *undefined*.
+          1. Let _genContext_ be the running execution context.
+          1. Set the Generator component of _genContext_ to _generator_.
+          1. Set the code evaluation state of _genContext_ such that when evaluation is resumed for that execution context the following steps will be performed:
+            1. If _generatorBody_ is a Parse Node, then
+              1. Let _result_ be the result of evaluating _generatorBody_.
+            1. Else,
+              1. Assert: _generatorBody_ is an Abstract Closure with no parameters.
+              1. Let _result_ be _generatorBody_().
+            1. Assert: If we return here, the generator either threw an exception or performed either an implicit or explicit return.
+            1. Remove _genContext_ from the execution context stack and restore the execution context that is at the top of the execution context stack as the running execution context.
+            1. Set _generator_.[[GeneratorState]] to ~completed~.
+            1. Once a generator enters the ~completed~ state it never leaves it and its associated execution context is never resumed. Any execution state associated with _generator_ can be discarded at this point.
+            1. If _result_.[[Type]] is ~normal~, let _resultValue_ be *undefined*.
+            1. Else if _result_.[[Type]] is ~return~, let _resultValue_ be _result_.[[Value]].
+            1. Else,
+              1. Assert: _result_.[[Type]] is ~throw~.
+              1. Return Completion(_result_).
+            1. Return CreateIterResultObject(_resultValue_, *true*).
+          1. Set _generator_.[[GeneratorContext]] to _genContext_.
+          1. Set _generator_.[[GeneratorState]] to ~suspendedStart~.
+          1. Return NormalCompletion(*undefined*).

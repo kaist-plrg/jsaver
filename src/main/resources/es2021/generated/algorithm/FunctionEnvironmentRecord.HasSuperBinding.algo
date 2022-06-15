@@ -1,0 +1,8 @@
+def [METHOD] FunctionEnvironmentRecord.HasSuperBinding(envRec)() = 0:{
+  0:if (= envRec.ThisBindingStatus ~lexical~) 0:return false else 0:{}
+  1:if (= envRec.FunctionObject.HomeObject undefined) 1:return false else 1:return true
+}
+- id: "sec-function-environment-records-hassuperbinding"
+- code:
+            1. If _envRec_.[[ThisBindingStatus]] is ~lexical~, return *false*.
+            1. If _envRec_.[[FunctionObject]].[[HomeObject]] has the value *undefined*, return *false*; otherwise, return *true*.
