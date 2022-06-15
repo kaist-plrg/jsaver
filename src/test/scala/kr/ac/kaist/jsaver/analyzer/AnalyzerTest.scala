@@ -1,6 +1,6 @@
 package kr.ac.kaist.jsaver.analyzer
 
-import kr.ac.kaist.jiset.error.{ InterpTimeout, AnalysisTimeout, AnalysisImprecise, NotSupported }
+import kr.ac.kaist.jsaver.error.{ InterpTimeout, AnalysisTimeout, AnalysisImprecise, NotSupported }
 import kr.ac.kaist.jsaver._
 import kr.ac.kaist.jsaver.analyzer.domain._
 import kr.ac.kaist.jsaver.analyzer.{ Initialize => AInintialize, _ }
@@ -62,7 +62,7 @@ trait AnalyzerTest extends JSAVERTest {
     val summary = progress.summary
     mkdir(logDir)
     dumpFile(JSAVERTest.spec.version, s"$logDir/ecma262-version")
-    dumpFile(currentVersion(BASE_DIR), s"$logDir/jiset-version")
+    dumpFile(currentVersion(BASE_DIR), s"$logDir/jsaver-version")
     summary.timeouts.setPath(s"$logDir/$name-timeout.log")
     summary.yets.setPath(s"$logDir/$name-yet.log")
     summary.fails.setPath(s"$logDir/$name-fail.log")

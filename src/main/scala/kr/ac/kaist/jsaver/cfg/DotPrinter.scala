@@ -1,7 +1,6 @@
 package kr.ac.kaist.jsaver.cfg
 
 import kr.ac.kaist.jsaver.LINE_SEP
-import kr.ac.kaist.jsaver.checker._
 import kr.ac.kaist.jsaver.ir._
 import kr.ac.kaist.jsaver.util.Appender
 import kr.ac.kaist.jsaver.util.Appender._

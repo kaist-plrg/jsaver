@@ -7,14 +7,10 @@ package object jsaver {
   // Base project directory root
   val BASE_DIR = System.getenv("JSAVER_HOME")
 
-  // TypeScript base project directory root
-  val TSBASE_DIR = System.getenv("JSDBG_HOME")
-
   // Log directory
   val LOG_DIR = s"$BASE_DIR/logs"
   val EXTRACT_LOG_DIR = s"$LOG_DIR/extract"
   val CFG_LOG_DIR = s"$LOG_DIR/cfg"
-  val CHECK_LOG_DIR = s"$LOG_DIR/check"
   val ANALYZE_LOG_DIR = s"$LOG_DIR/analyze"
 
   // Specification directory
@@ -23,15 +19,7 @@ package object jsaver {
 
   // Tests directory root
   val TEST_DIR = s"$BASE_DIR/tests"
-  val CHECKER_DIR = s"$TEST_DIR/checker"
-  val COMPILE_DIR = s"$TEST_DIR/compile"
-  val CFG_TEST_DIR = s"$TEST_DIR/cfg"
-  val BASIC_COMPILE_DIR = s"$COMPILE_DIR/basic"
-  val LEGACY_COMPILE_DIR = s"$COMPILE_DIR/legacy"
-  val GRAMMAR_DIR = s"$TEST_DIR/grammar"
-  val IR_DIR = s"$TEST_DIR/ir"
   val JS_DIR = s"$TEST_DIR/js"
-  val ESPARSE_DIR = s"$TEST_DIR/esparse"
   val TEST262_DIR = s"$TEST_DIR/test262"
   val TEST262_TEST_DIR = s"$TEST262_DIR/test"
   val TEST_DESC_PATH = s"$BASE_DIR/test_desc.json"
