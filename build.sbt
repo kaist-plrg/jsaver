@@ -3,7 +3,7 @@ import sbtassembly.AssemblyPlugin.defaultUniversalScript
 
 ThisBuild / version       := "1.0"
 ThisBuild / scalaVersion  := "2.13.1"
-ThisBuild / organization  := "kr.ac.kaist.jsaver"
+ThisBuild / organization  := "jsaver"
 ThisBuild / useSuperShell := false
 ThisBuild / scalacOptions := Seq(
   "-deprecation", "-feature", "-language:postfixOps",

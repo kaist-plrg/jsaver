@@ -12,11 +12,7 @@ ECMAScript Specifications (IRES) from diverse versions of ECMA-262.
 
 
 ## Getting Started Guide
-The artifact is open-source can be obtained by cloning the following git
-repository:
-```bash
-$ git clone --recurse-submodules https://github.com/kaist-plrg/jsaver.git
-```
+The artifact is open-source and anonymized for a double-binded review process.
 Please see `INSTALL.md` for the detailed guide of installation and how to use
 this artifact.
 
@@ -52,4 +48,4 @@ and a **View** representing an analysis sensitivity.
 - **View** - `$JSAVER_SRC/analyzer/View.scala`
 - **Worklist** - `$JSAVER_SRC/util/Worklist.scala`
 
-where `$JSAVER_SRC` denotes `$JSAVER_HOME/src/main/scala/kr/ac/kaist/jsaver`.
+where `$JSAVER_SRC` denotes `$JSAVER_HOME/src/jsaver`.

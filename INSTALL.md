@@ -20,14 +20,6 @@ scratch.  Before installation, please download JDK 8 and
 | [bash](https://www.gnu.org/software/bash/)                  | GNU Bash (version >= 3.2.57)         |
 
 
-## Download JSAVER
-
-TODO - Zenodo / Docker
-
-```bash
-$ git clone --recurse-submodules https://github.com/kaist-plrg/jsaver.git
-```
-
 ## Environment Setting (!!IMPORTANT!!)
 
 Insert the following commands to `~/.bashrc` (or `~/.zshrc`):
@@ -35,12 +27,14 @@ Insert the following commands to `~/.bashrc` (or `~/.zshrc`):
 # for JSAVER
 export JSAVER_HOME="<path to JSAVER>"
 export PATH="$JSAVER_HOME/bin:$PATH"
+source $JSAVER_HOME/jsaver-auto-completion
 ```
 The `<path to JSAVER>` should be the _absolute path_ of JSAVER repository.
 
 
 ## Installation of JSAVER using `sbt`
 ```bash
+$ git submodule update --init
 $ sbt assembly
 ```
 
@@ -49,8 +43,6 @@ installation of a proper `sbt` version.
 
 
 ## Basic Commands
-
-TODO - remove or merge unnecessary commands
 
 You can run the artifact with the following command:
 ```bash
@@ -82,23 +74,3 @@ and global options:
 
 _NOTE_: We omitted several options for the brevity. Please see the other
 options using `jsaver help` command.
-
-## Simple Examples
-
-TODO
-
-## How To Reproduce Evaluation Results
-
-TODO
-
-### Raw Data Creation
-
-TODO
-
-### Drawing Figures and Tables
-
-TODO
-
-### RQX) ...
-
-TODO
