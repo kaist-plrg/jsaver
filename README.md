@@ -1,55 +1,81 @@
 # JSAVER: JavaScript Static Analyzer via ECMAScript Representation
 
-**JSAVER** is a **J**avaScript **S**tatic **A**nalyzer **v**ia **E**CMAScript
-**R**epresentation.  It is the first tool that automatically derives JavaScript
-static analyzers from language specifications using an _interpreter_-based
-approach called **meta-level static analysis** instead of traditional a
-_compiler_-based approach.
+JSAVER is a JavaScript Static Analyzer via ECMAScript Representation.  It is the
+first tool that automatically derives JavaScript static analyzers from language
+specifications using an _interpreter_-based approach called meta-level static
+analysis instead of traditional a _compiler_-based approach.
 
-This artifact extends [JISET](https://github.com/kaist-plrg/jiset) to extract
-JavaScript definitional interpeters written in Intermediate Representations for
-ECMAScript Specifications (IRES) from diverse versions of ECMA-262.
+This artifact extends [JISET](https://github.com/kaist-plrg/jiset), a JavaScript
+IR-based Semantics Extraction Toolchain, to extract JavaScript definitional
+interpreters from diverse versions of ECMA-262, the standard specification of
+ECMAScript (the official name of JavaScript) written in English. The extracted
+definitional interpreter is written in $\text{IR}_\text{ES}$, an Intermediate
+Representations for ECMAScript Specifications.
 
 
 ## Getting Started Guide
-The artifact is open-source can be obtained by cloning the following git
-repository:
+
+The source code of JSAVER and the dataset of our study are publicly available at
+https://doi.org/10.5281/zenodo.6668789, and the latest version is maintained as
+a GitHub repository:
+
 ```bash
 $ git clone --recurse-submodules https://github.com/kaist-plrg/jsaver.git
 ```
-Please see `INSTALL.md` for the detailed guide of installation and how to use
-this artifact.
 
+Please see `INSTALL.md` for the detailed guide on installation and how to use
+this artifact.  We also provide a docker image as follows:
+
+```bash
+$ docker run -it --rm jhnaldo/fse22-jsaver
+```
 
 ## Overall Structure
 
 ![image](https://user-images.githubusercontent.com/6766660/173753671-01981c6d-9ab2-4640-b2a8-f045b50cfbb4.png)
 
 JSAVER consists of two phases: 1) definitional interpreter extraction and 2)
-meta-level static analysis:
+meta-level static analysis.
 
 ### 1) Definitional Interpreter Extraction
-We utilizes another tool [**JISET**](https://github.com/kaist-plrg/jiset), which
-is a **J**avaScript **I**R-based **S**emantics **E**xtraction **T**oolchain, to
-extract JavaScript definitional interpeters from given ECMA-262.  In this
-artifact, we extracted the definitional interpreter from ES2021 (ES21), the
-latest version of ECMA-262, to `$JSAVER_HOME/src/main/resources/es2021` and
-manually filled out essential steps in its not-yet-compiled parts.
+
+We utilize another tool [JISET](https://github.com/kaist-plrg/jiset), a
+JavaScript IR-based Semantics Extraction Toolchain, to extract JavaScript
+definitional interpreters from given [ECMA-262](`./ecma262/`).  In this
+artifact, we extracted the definitional interpreter from ES2021 (ES12), the
+latest version of ECMA-262, and manually filled out essential steps of its
+not-yet-compiled parts.  It consists of two different main parts for semantics
+and syntax of JavaScript. For semantics, it compiles abstract algorithms in
+ECMA-262 to corresponding [$\text{IR}_\text{ES}$
+Functions](./src/main/resources/es2021/generated/algorithm/).  For syntax, it
+generates a [JavaScript
+Parser](./src/main/scala/kr/ac/kaist/jsaver/js/Parser.scala) in Scala.
+
 
 ### 2) Meta-Level Static Analysis
-JSAVER performs a meta-level static analysis; it first builds a **Control-Flow
-Graph** for a given definitional interpeter, then, it computes the fixpoint of
-**Abstract Transfer Function** with **Initial Abstract State** restricted with a
-given JavaScript program.  It utilizes a **Worklist** algorithm to update the
-abstract state per **Control Point**, a pair of a **Control-Flow Graph Node**
-and a **View** representing an analysis sensitivity.
 
-- **Abstract Transfer Function** - `$JSAVER_SRC/analyzer/AbsTransfer.scala`
-- **Initial Abstract State** - `$JSAVER_SRC/analyzer/Initialize.scala`
-- **Control Point** - `$JSAVER_SRC/analyzer/ControlPoint.scala`
-- **Control-Flow Graph** - `$JSAVER_SRC/cfg/CFG.scala`
-- **Control-Flow Graph Nodes** - `$JSAVER_SRC/cfg/Node.scala`
-- **View** - `$JSAVER_SRC/analyzer/View.scala`
-- **Worklist** - `$JSAVER_SRC/util/Worklist.scala`
+JSAVER performs a _meta-level static analysis_ with JavaScript as its
+_defined_-language and $\text{IR}_\text{ES}$ as its _defining_-language.  Thus,
+it indirectly analyzes a JavaScript program by analyzing $\text{IR}_\text{ES}$
+functions with the AST of the program as an argument.  Using the generated
+parser, it first parses a given JavaScript program to produce an [Abstract
+Syntax Tree (AST)](./src/main/scala/kr/ac/kaist/jsaver/js/AST.scala). Then,
+[Analysis
+Initializer](./src/main/scala/kr/ac/kaist/jsaver/analyzer/Initialize.scala)
+constructs an initial [Abstract
+State](./src/main/scala/kr/ac/kaist/jsaver/analyzer/domain/state/BasicState.scala)
+with the extracted $\text{IR}_\text{ES}$ functions and the produced AST.
+Finally, JSAVER computes the fixpoint of the [Abstract Transfer
+Function](./src/main/scala/kr/ac/kaist/jsaver/analyzer/AbsTransfer.scala) with
+the initial abstract state.
 
-where `$JSAVER_SRC` denotes `$JSAVER_HOME/src/main/scala/kr/ac/kaist/jsaver`.
+It utilizes a
+[Worklist](./src/main/scala/kr/ac/kaist/jsaver/util/Worklist.scala) algorithm to
+update the abstract state per [Control
+Point](./src/main/scala/kr/ac/kaist/jsaver/analyzer/ControlPoint.scala), a pair
+of the following two components:
+- A [Node](./src/main/scala/kr/ac/kaist/jsaver/cfg/Node.scala) in
+    [Control-Flow Graph](./src/main/scala/kr/ac/kaist/jsaver/cfg/CFG.scala) of
+    the extracted definitional interpreter
+- A [View](./src/main/scala/kr/ac/kaist/jsaver/analyzer/View.scala)
+    to represent an analysis sensitivity.
