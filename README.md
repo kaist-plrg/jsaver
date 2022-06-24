@@ -27,7 +27,7 @@ Please see `INSTALL.md` for the detailed guide on installation and how to use
 this artifact.  We also provide a docker image as follows:
 
 ```bash
-$ docker run -it --rm jhnaldo/fse22-jsaver
+$ docker run -it -m=16g --rm jhnaldo/fse22-jsaver
 ```
 
 ## Overall Structure
@@ -78,4 +78,4 @@ of the following two components:
     [Control-Flow Graph](./src/main/scala/kr/ac/kaist/jsaver/cfg/CFG.scala) of
     the extracted definitional interpreter
 - A [View](./src/main/scala/kr/ac/kaist/jsaver/analyzer/View.scala)
-    to represent an analysis sensitivity.
+    that represents an analysis sensitivity.
