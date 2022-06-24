@@ -1,32 +1,32 @@
 # Installation Guide
 
 We explain how to install JSAVER with necessary environment settings from the
-scratch.  Before installation, please download JDK 8 and
+scratch.  Before installation, please download [JDK
+8](https://www.oracle.com/java/technologies/java8.html) and
 [`sbt`](https://www.scala-sbt.org/1.x/docs/Installing-sbt-on-Linux.html).
-
-## Requirements
-
-### Machine Requirements
-| Name              | Requirements   |
-|:-----------------:|:---------------|
-| Memory            | ≥ 16GB         |
-| Operating System  | Linux or macOS |
-
-### Programming Language Environments
-| Name                                                        | Description                          |
-|:-----------------------------------------------------------:|:-------------------------------------|
-| [jdk8](https://www.oracle.com/java/technologies/java8.html) | Java Standard Edition 8              |
-| [sbt](https://www.scala-sbt.org/)                           | An interactive build tool for Scala  |
-| [bash](https://www.gnu.org/software/bash/)                  | GNU Bash (version >= 3.2.57)         |
-
 
 ## Download JSAVER
 
-TODO - Zenodo / Docker
+The source code of JSAVER and the dataset of our study are publicly available at
+https://doi.org/10.5281/zenodo.6668789, and the latest version is maintained as
+a GitHub repository:
 
 ```bash
 $ git clone --recurse-submodules https://github.com/kaist-plrg/jsaver.git
 ```
+
+Additionally, we packaged the artifact in a docker container.  If you want to
+skip the environment setting, we recommend you to use it.  You can install the
+docker by following the instruction in
+[https://docs.docker.com/get-started/](https://docs.docker.com/get-started/)
+and downlaod our docker image with the following command:
+```
+$ docker pull jhnaldo/fse22-jsaver
+$ docker run -it -m=16g --rm jhnaldo/fse22-jsaver
+# user: guest, password: guest
+```
+> **WARNING**: The docker image is 3GB large thus be patient when you download it
+> and please assign more than 16GB memory for the docker engine.
 
 ## Environment Setting (!!IMPORTANT!!)
 
@@ -35,6 +35,7 @@ Insert the following commands to `~/.bashrc` (or `~/.zshrc`):
 # for JSAVER
 export JSAVER_HOME="<path to JSAVER>"
 export PATH="$JSAVER_HOME/bin:$PATH"
+source $JSAVER_HOME/jsaver-auto-completion
 ```
 The `<path to JSAVER>` should be the _absolute path_ of JSAVER repository.
 
@@ -44,8 +45,8 @@ The `<path to JSAVER>` should be the _absolute path_ of JSAVER repository.
 $ sbt assembly
 ```
 
-_NOTE_: It might take several minutes at the first time because of the
-installation of a proper `sbt` version.
+> **NOTE**: It might take several minutes at the first time because of the
+> installation of a proper `sbt` version.
 
 
 ## Basic Commands
@@ -92,10 +93,6 @@ TODO
 TODO
 
 ### Raw Data Creation
-
-TODO
-
-### Drawing Figures and Tables
 
 TODO
 
