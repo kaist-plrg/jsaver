@@ -76,16 +76,7 @@ case object Parse extends Phase[Unit, ParseConfig, Script] {
   }
 
   def defaultConfig: ParseConfig = ParseConfig()
-  val options: List[PhaseOption[ParseConfig]] = List(
-    ("json", StrOption((c, s) => c.jsonFile = Some(s)),
-      "dump JSON of AST tree into a file."),
-    ("pprint", BoolOption(c => c.pprint = true),
-      "pretty print AST tree"),
-    ("esparse", BoolOption(c => c.esparse = true),
-      "use `esparse` instead of the generated parser."),
-    ("test262", BoolOption(c => c.test262 = true),
-      "prepend test262 harness files based on metadata."),
-  )
+  val options: List[PhaseOption[ParseConfig]] = List()
 }
 
 // Parse phase config

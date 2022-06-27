@@ -56,12 +56,12 @@ trait Compilers extends TokenListParsers {
   val manualSteps: Map[String, Inst] = try {
     implicit lazy val PairDecoder: Decoder[Pair] = deriveDecoder
     implicit lazy val PairEncoder: Encoder[Pair] = deriveEncoder
-    val pairs = readJson[List[Pair]](s"$VERSION_DIR/rule.json")
+    val pairs = readJson[List[Pair]]("rule.json")
     (for (Pair(str, inst) <- pairs) yield str -> inst).toMap
   } catch {
     case e: Throwable =>
       println
-      printlnColor(RED)(s"Failed to load $VERSION_DIR/rule.json")
+      printlnColor(RED)(s"Failed to load rule.json")
       println
       printlnColor(RED)(e.getMessage)
       Map()

@@ -15,6 +15,7 @@ import org.jsoup.nodes._
 import scala.collection.mutable.Stack
 
 object ECMAScriptParser {
+  def apply(version: String): ECMAScript = apply(version, "", false)
   def apply(
     version: String,
     query: String,
@@ -265,9 +266,9 @@ object ECMAScriptParser {
 
   // parse manual algorithms
   def manualAlgos(version: String): Iterable[Algo] = for {
-    file <- walkTree(s"$VERSION_DIR/manual-algo") ++ (
-      if (BUGFIX) walkTree(s"$VERSION_DIR/bugfix-algo")
-      else Nil
+    file <- (
+      walkTree(s"$RESOURCE_DIR/$version/manual-algo") ++
+      walkTree(s"$RESOURCE_DIR/$version/bugfix-algo")
     )
     filename = file.toString
     if algoFilter(filename)

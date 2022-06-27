@@ -9,10 +9,11 @@ import kr.ac.kaist.jsaver.util.JvmUseful._
 import kr.ac.kaist.jsaver.util.Useful._
 
 case class ModelGenerator(spec: ECMAScript, parser: Boolean) {
+  val version = spec.version
   val grammar = spec.grammar
 
   // generate model/VERSION in resource directory
-  dumpSpec(spec, s"$VERSION_DIR/generated")
+  dumpSpec(spec, s"$RESOURCE_DIR/$version/generated")
 
   // generate js/ast/*.scala in source code directory
   ASTGenerator(grammar)

@@ -35,7 +35,6 @@ package object jsaver {
 
   // Resource directory
   val RESOURCE_DIR = s"$BASE_DIR/src/main/resources"
-  val VERSION_DIR = s"$RESOURCE_DIR/$VERSION"
   val ID_START_JSON = s"$RESOURCE_DIR/ID_Start.json"
   val ID_CONTINUE_JSON = s"$RESOURCE_DIR/ID_Continue.json"
 
@@ -51,9 +50,6 @@ package object jsaver {
 
   // Interactive debugging mode
   var INTERACTIVE: Boolean = false
-
-  // Bugfix mode
-  var BUGFIX: Boolean = true
 
   // Logging mode
   var LOG: Boolean = false

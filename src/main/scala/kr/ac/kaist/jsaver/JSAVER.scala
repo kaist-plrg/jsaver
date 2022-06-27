@@ -61,14 +61,9 @@ object JSAVER {
 
     // JISET
     CmdExtract,
-    CmdGenModel,
 
     // JSAVER
-    CmdParse,
     CmdAnalyze,
-
-    // Test262
-    CmdFilterMeta,
   )
   val cmdMap = commands.foldLeft[Map[String, Command[_]]](Map()) {
     case (map, cmd) => map + (cmd.name -> cmd)
@@ -80,28 +75,16 @@ object JSAVER {
 
     // JISET
     Extract,
-    GenModel,
 
     // JSAVER
     Parse,
     Analyze,
-
-    // Test262
-    FilterMeta,
   )
 
   // global options
   val options: List[PhaseOption[JSAVERConfig]] = List(
     ("silent", BoolOption(c => c.silent = true),
       "do not show final results."),
-    ("debug", BoolOption(c => DEBUG = true),
-      "turn on the debug mode."),
-    ("interactive", BoolOption(c => INTERACTIVE = true),
-      "turn on the interactive mode."),
-    ("no-bugfix", BoolOption(c => BUGFIX = false),
-      "use semantics including specification bugs."),
-    ("log", BoolOption(c => LOG = true),
-      "turn on the logging mode."),
     ("time", BoolOption(c => c.time = true),
       "display the duration time.")
   )

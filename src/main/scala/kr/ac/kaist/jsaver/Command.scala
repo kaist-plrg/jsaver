@@ -40,36 +40,17 @@ case object CmdHelp extends Command("help", CmdBase >> Help) {
 ////////////////////////////////////////////////////////////////////////////////
 // extract
 case object CmdExtract extends Command("extract", CmdBase >> Extract) {
-  def help = "extracts ECMAScript model from ecma262/spec.html."
+  def help = "extracts a definitional interpreter from ecma262/spec.html."
   override def display(spec: ECMAScript): Unit = println(spec)
-}
-
-// gen-model
-case object CmdGenModel extends Command("gen-model", CmdExtract >> GenModel) {
-  def help = "generates ECMAScript models."
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // JSAVER (JavaScript Static Analyzer via ECMAScript Representations)
 ////////////////////////////////////////////////////////////////////////////////
-// parse
-case object CmdParse extends Command("parse", CmdBase >> Parse) {
-  def help = "parses a JavaScript file using the generated parser."
-  override def display(script: js.ast.Script): Unit = println(script)
-}
-
 // analyze
-case object CmdAnalyze extends Command("analyze", CmdParse >> Analyze) {
+case object CmdAnalyze extends Command("analyze", CmdBase >> Parse >> Analyze) {
   def help = "performs static analysis for a given JavaScript program."
   override def display(sem: analyzer.AbsSemantics): Unit = {
     println(sem.getString(sem.runJobsRp, CYAN, detail = true))
   }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Test262
-////////////////////////////////////////////////////////////////////////////////
-// filter-meta
-case object CmdFilterMeta extends Command("filter-meta", CmdBase >> FilterMeta) {
-  def help = "extracts and filters out metadata of test262 tests."
 }

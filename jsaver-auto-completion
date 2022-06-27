@@ -12,14 +12,12 @@ _jsaver_completions() {
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-  cmdList="help extract gen-model parse analyze filter-meta "
-  globalOpt="-silent -debug -interactive -no-bugfix -log -time "
+  cmdList="help extract analyze "
+  globalOpt="-silent -time "
   helpOpt=""
-  extractOpt="-extract:version -extract:query -extract:load -extract:json -extract:detail "
-  genmodelOpt="-gen-model:parser "
-  parseOpt="-parse:json -parse:pprint -parse:esparse -parse:test262 "
-  analyzeOpt="-analyze:repl -analyze:exec-level -analyze:gc -analyze:inf-sens -analyze:loop-iter -analyze:loop-depth -analyze:js-k-cfa -analyze:ir-k-cfa -analyze:timeout "
-  filtermetaOpt="-filter-meta:load "
+  extractOpt="-extract:version -extract:genModel "
+  parseOpt=""
+  analyzeOpt="-analyze:loop-iter -analyze:loop-depth -analyze:js-k-cfa -analyze:ir-k-cfa -analyze:timeout "
 
   # completion for commands
   case "${COMP_CWORD}" in
@@ -42,20 +40,8 @@ _jsaver_completions() {
           COMPREPLY=($(compgen -W "${globalOpt} ${extractOpt}"))
           return 0
           ;;
-        gen-model)
-          COMPREPLY=($(compgen -W "${globalOpt} ${genmodelOpt} ${extractOpt}"))
-          return 0
-          ;;
-        parse)
-          COMPREPLY=($(compgen -W "${globalOpt} ${parseOpt}"))
-          return 0
-          ;;
         analyze)
           COMPREPLY=($(compgen -W "${globalOpt} ${analyzeOpt} ${parseOpt}"))
-          return 0
-          ;;
-        filter-meta)
-          COMPREPLY=($(compgen -W "${globalOpt} ${filtermetaOpt}"))
           return 0
           ;;
       esac
