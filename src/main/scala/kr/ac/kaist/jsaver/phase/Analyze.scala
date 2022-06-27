@@ -19,12 +19,15 @@ case object Analyze extends Phase[Script, AnalyzeConfig, AbsSemantics] {
     jsaverConfig: JSAVERConfig,
     config: AnalyzeConfig
   ): AbsSemantics = {
+    config.version.map(VERSION = _)
     setSpec(loadSpec(s"$RESOURCE_DIR/$VERSION/generated"))
     AbsSemantics(script, config.timeout).fixpoint
   }
 
   def defaultConfig: AnalyzeConfig = AnalyzeConfig()
   val options: List[PhaseOption[AnalyzeConfig]] = List(
+    ("version", StrOption((c, s) => c.version = Some(s)),
+      "set the git version of ecma262."),
     ("loop-iter", NumOption((c, i) => LOOP_ITER = i),
       "set maximum loop iteration."),
     ("loop-depth", NumOption((c, i) => LOOP_DEPTH = i),
@@ -40,6 +43,6 @@ case object Analyze extends Phase[Script, AnalyzeConfig, AbsSemantics] {
 
 // Analyze phase config
 case class AnalyzeConfig(
-  var execLevel: Int = 0,
+  var version: Option[String] = None,
   var timeout: Option[Long] = None
 ) extends Config

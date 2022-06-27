@@ -110,7 +110,7 @@ object JSAVERTest {
   // extract specifications
   lazy val info = ECMAScriptParser.preprocess(VERSION)
   lazy val spec = {
-    js.setSpec(NativeHelper.loadSpec(s"$VERSION_DIR/generated"))
+    js.setSpec(NativeHelper.loadSpec(s"$RESOURCE_DIR/$VERSION/generated"))
     js.spec
   }
   lazy val cfg = new CFG(spec)

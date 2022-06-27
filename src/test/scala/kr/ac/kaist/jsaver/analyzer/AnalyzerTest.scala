@@ -37,7 +37,7 @@ trait AnalyzerTest extends JSAVERTest {
     // intitialize spec
     JSAVERTest.spec
     // fixpoint calculation
-    AbsSemantics(script, execLevel, Some(ANALYSIS_TIMEOUT)).fixpoint
+    AbsSemantics(script, Some(ANALYSIS_TIMEOUT), execLevel).fixpoint
   }
 
   // tests for JS analyzer

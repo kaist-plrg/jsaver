@@ -307,9 +307,17 @@ object AbsSemantics {
   def apply(
     script: js.ast.Script,
     timeLimit: Option[Long]
+  ): AbsSemantics = apply(script, timeLimit, 0)
+  def apply(
+    script: js.ast.Script,
+    timeLimit: Option[Long],
+    execLevel: Int
   ): AbsSemantics = {
     val initPair = Initialize(script)
     val sem = AbsSemantics(npMap = Map(initPair), timeLimit = timeLimit)
+    if (execLevel >= 1) {
+      sem.checkWithInterp = Some(CheckWithInterp(sem, script, execLevel))
+    }
     sem
   }
 }
