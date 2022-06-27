@@ -13,7 +13,7 @@ trait UId[T <: UId[T]] { _: T =>
   uidGen.uidMap += uid -> this
 
   // get simple string
-  def uidString: String = s"${getClass.getSimpleName}<$uid>"
+  def uidString: String = s"${getClass.getSimpleName}[$uid]"
 
   // override equality comparison using unique ids
   override def equals(that: Any): Boolean = that match {

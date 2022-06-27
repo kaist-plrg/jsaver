@@ -38,13 +38,13 @@ class Stringifier(
       calls: List[String],
       loops: List[LoopCtxt]
     ): Appender = if (detail) {
-      app >> calls.mkString("<call: ", ", ", ">")
+      app >> calls.mkString("[call: ", ", ", "]")
       app >> loops.map(_ match {
         case LoopCtxt(loop, depth) => s"${loop.uidString}($depth)"
-      }).mkString("<loop: ", ", ", ">")
+      }).mkString("[loop: ", ", ", "]")
     } else {
-      app >> "<call: " >> calls.length >> ">"
-      app >> "<loop: " >> loops.length >> ">"
+      app >> "[call: " >> calls.length >> "]"
+      app >> "[loop: " >> loops.length >> "]"
     }
 
     // js views
