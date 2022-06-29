@@ -37,7 +37,7 @@ $ docker run -it -m=16g --rm jhnaldo/fse22-jsaver
 JSAVER consists of two phases: 1) definitional interpreter extraction and 2)
 meta-level static analysis.
 
-### 1) Definitional Interpreter Extraction
+### Definitional Interpreter Extraction
 
 We utilize another tool [JISET](https://github.com/kaist-plrg/jiset), a
 JavaScript IR-based Semantics Extraction Toolchain, to extract JavaScript
@@ -52,7 +52,7 @@ generates a [JavaScript
 Parser](./src/main/scala/kr/ac/kaist/jsaver/js/Parser.scala) in Scala.
 
 
-### 2) Meta-Level Static Analysis
+### Meta-Level Static Analysis
 
 JSAVER performs a _meta-level static analysis_ with JavaScript as its
 _defined_-language and $\text{IR}_\text{ES}$ as its _defining_-language.  Thus,

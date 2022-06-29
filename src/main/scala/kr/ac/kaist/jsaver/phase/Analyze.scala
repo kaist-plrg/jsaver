@@ -26,10 +26,10 @@ case object Analyze extends Phase[Script, AnalyzeConfig, AbsSemantics] {
 
   def defaultConfig: AnalyzeConfig = AnalyzeConfig()
   val options: List[PhaseOption[AnalyzeConfig]] = List(
-    ("repl", BoolOption(c => USE_REPL = true),
-      "use REPL for static analysis."),
     ("version", StrOption((c, s) => c.version = Some(s)),
       "set the git version of ecma262."),
+    ("repl", BoolOption(c => USE_REPL = true),
+      "use a REPL for meta-level static analysis."),
     ("loop-iter", NumOption((c, i) => LOOP_ITER = i),
       "set maximum loop iteration."),
     ("loop-depth", NumOption((c, i) => LOOP_DEPTH = i),
