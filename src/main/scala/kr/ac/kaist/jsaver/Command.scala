@@ -54,3 +54,8 @@ case object CmdAnalyze extends Command("analyze", CmdBase >> Parse >> Analyze) {
     println(sem.getString(sem.runJobsRp, CYAN, detail = true))
   }
 }
+
+// collect (for evaluation)
+case object CmdCollect extends Command("collect", CmdBase >> Collect) {
+  def help = "collects the final concrete/abstract state of a JavaScript program."
+}

@@ -17,6 +17,8 @@
 
 | Name                                                        | Description                          |
 |:-----------------------------------------------------------:|:-------------------------------------|
+| [node](https://nodejs.org/)                                 | Node.js (version >= 16.15.1 LTS)     |
+| [python3](https://www.python.org/downloads/)                | Python 3 (version >= 3.7.4)          |
 | [Excel](https://www.microsoft.com/en-us/microsoft-365/excel)| Excel (version >= 2016)              |
 
 _NOTE_: Even though our tool is available in any Linux machine, macOS is

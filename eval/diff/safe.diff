@@ -1,0 +1,336 @@
+diff --git a/src/main/scala/kr/ac/kaist/safe/Safe.scala b/src/main/scala/kr/ac/kaist/safe/Safe.scala
+index f5bf29d2..9441b1a5 100644
+--- a/src/main/scala/kr/ac/kaist/safe/Safe.scala
++++ b/src/main/scala/kr/ac/kaist/safe/Safe.scala
+@@ -15,6 +15,7 @@ import scala.util.{ Try, Failure }
+ import kr.ac.kaist.safe.errors.SafeException
+ import kr.ac.kaist.safe.errors.error.{ NoCmdError, NoInputError }
+ import kr.ac.kaist.safe.phase._
++import kr.ac.kaist.safe.util.Useful._
+ import kr.ac.kaist.safe.util._
+ 
+ object Safe {
+@@ -29,16 +30,7 @@ object Safe {
+         case None => Failure(NoCmdError(str))
+       }
+       case Nil => Failure(NoInputError)
+-    }) recover {
+-      // SafeException: print the usage message.
+-      case ex: SafeException =>
+-        Console.err.println(ex.getMessage)
+-      // Unexpected: print the stack trace.
+-      case ex =>
+-        Console.err.println("* Unexpected error occurred.")
+-        Console.err.println(ex.toString)
+-        Console.err.println(ex.getStackTrace.mkString(LINE_SEP))
+-    }
++    }).get
+   }
+ 
+   def apply[Result](
+@@ -46,8 +38,14 @@ object Safe {
+     runner: SafeConfig => Try[Result],
+     config: SafeConfig
+   ): Try[Result] = {
++    // dump failed result
++    writeWithFileName(s"$BASE_DIR/result.json") { writer =>
++      writer.write(s"""{"error": true}""")
++    }
++
+     // set the start time.
+     val startTime = System.currentTimeMillis
++    __SAFE_START_TIME__ = System.currentTimeMillis
+ 
+     // execute the command.
+     val result: Try[Result] = runner(config)
+diff --git a/src/main/scala/kr/ac/kaist/safe/package.scala b/src/main/scala/kr/ac/kaist/safe/package.scala
+index e56d21b4..7d4a27ed 100644
+--- a/src/main/scala/kr/ac/kaist/safe/package.scala
++++ b/src/main/scala/kr/ac/kaist/safe/package.scala
+@@ -15,6 +15,10 @@ import java.io.File
+ import kr.ac.kaist.safe.util.{ NodeUtil => NU }
+ 
+ package object safe {
++  // XXX JSAVER evaluation
++  var __SAFE_START_TIME__ = -1L
++  var __SAFE_ANALYSIS_START_TIME__ = -1L
++
+   // Line seperator
+   val LINE_SEP = System.getProperty("line.separator")
+ 
+diff --git a/src/main/scala/kr/ac/kaist/safe/phase/ASTRewrite.scala b/src/main/scala/kr/ac/kaist/safe/phase/ASTRewrite.scala
+index a070ee96..bc65dac4 100644
+--- a/src/main/scala/kr/ac/kaist/safe/phase/ASTRewrite.scala
++++ b/src/main/scala/kr/ac/kaist/safe/phase/ASTRewrite.scala
+@@ -17,6 +17,7 @@ import kr.ac.kaist.safe.ast_rewriter.{ Disambiguator, Hoister, WithRewriter }
+ import kr.ac.kaist.safe.errors.ExcLog
+ import kr.ac.kaist.safe.nodes.ast.Program
+ import kr.ac.kaist.safe.util._
++import kr.ac.kaist.safe._
+ 
+ // ASTRewrite phase
+ case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
+@@ -29,6 +30,8 @@ case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
+     safeConfig: SafeConfig,
+     config: ASTRewriteConfig
+   ): Try[Program] = {
++    __SAFE_ANALYSIS_START_TIME__ = System.currentTimeMillis // XXX JSAVER evaluation
++
+     val (program, excLog) = rewrite(pgm)
+ 
+     // Report errors.
+diff --git a/src/main/scala/kr/ac/kaist/safe/phase/Analyze.scala b/src/main/scala/kr/ac/kaist/safe/phase/Analyze.scala
+index 27a74e81..5ef7dbb8 100644
+--- a/src/main/scala/kr/ac/kaist/safe/phase/Analyze.scala
++++ b/src/main/scala/kr/ac/kaist/safe/phase/Analyze.scala
+@@ -11,13 +11,19 @@
+ 
+ package kr.ac.kaist.safe.phase
+ 
+-import kr.ac.kaist.safe.SafeConfig
++import kr.ac.kaist.safe.{ Safe, SafeConfig, BASE_DIR }
+ import kr.ac.kaist.safe.analyzer._
++import kr.ac.kaist.safe.analyzer.domain.{ Map => DMap, _ }
++import kr.ac.kaist.safe.analyzer.model.GLOBAL_LOC
+ import kr.ac.kaist.safe.analyzer.console.{ Console, Interactive, WebConsole }
+ import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
+ import kr.ac.kaist.safe.nodes.cfg.CFG
+ import kr.ac.kaist.safe.util._
++import kr.ac.kaist.safe._
++import kr.ac.kaist.safe.util.Useful._
+ import kr.ac.kaist.safe.web.WebServer
++import spray.json._
++import spray.json.DefaultJsonProtocol._
+ import scala.util.{ Success, Try }
+ 
+ // Analyze phase
+@@ -42,6 +48,10 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
+       else new Fixpoint(sem, interOpt)
+     val (iters, duration) = fixpoint.compute(iter + 1)
+ 
++    // JSAVER evaluation
++    val __SAFE_TOTAL_TIME__ = (System.currentTimeMillis - __SAFE_START_TIME__) / 1000.0d
++    val __SAFE_ANALYSIS_TIME__ = (System.currentTimeMillis - __SAFE_ANALYSIS_START_TIME__) / 1000.0d
++
+     // display duration time
+     if (config.time) {
+       println(s"iteration number: $iters")
+@@ -56,20 +66,214 @@ case object Analyze extends PhaseObj[(CFG, Semantics, TracePartition, HeapBuildC
+     }
+ 
+     // print html file: {htmlName}.html
+-    val exitCP = ControlPoint(cfg.globalFunc.exit, initTP)
+     config.htmlName.foreach(name => {
+       HTMLWriter.writeHTMLFile(cfg, sem, None, s"$name.html")
+     })
+ 
+-    // dump exit state
+-    if (config.exitDump) {
++    // control points
++    val initCP = ControlPoint(cfg.globalFunc.entry, initTP)
++    val exitCP = ControlPoint(cfg.globalFunc.exit, initTP)
++    val exitExcCP = ControlPoint(cfg.globalFunc.exitExc, initTP)
++
++    // final result
++    val pass = !sem.getState(exitCP).isBottom
++    val fail = !sem.getState(exitExcCP).isBottom
++    val collected = Collector.CState()
++
++    // collect exit state
++    if (pass) {
++      // init state
++      val initState = sem.getState(initCP)
++      val predef = initState.heap.get(GLOBAL_LOC).nmap.map.keySet
++
++      // exit state
+       val state = sem.getState(exitCP)
+-      println(state.toString)
++      val heap = state.heap
++      val globalObj = heap.get(GLOBAL_LOC)
++      val props = globalObj.nmap.map
++      var handledLocs: Set[Loc] = Set()
++
++      // add env
++      def addEnv(x: String, vOpt: CKeyObject.NVOpt): Unit = {
++        collected.addEnv(x, Collector.convertValue(vOpt))
++        addHeap(vOpt)
++      }
++
++      // add heap
++      def addHeap(vOpt: CKeyObject.NVOpt): Unit = {
++        vOpt.value.value.locset.getSingle match {
++          // collect property
++          case ConOne(loc) if !handledLocs.contains(loc) =>
++            handledLocs += loc
++            val obj = heap.get(loc)
++            val props = obj.nmap.map
++            val map = (for {
++              (pKey, vOpt) <- props
++              _ = addHeap(vOpt)
++            } yield (pKey -> Collector.convertValue(vOpt)))
++            collected.addHeap(loc, map)
++          case _ =>
++        }
++      }
++
++      // collect state
++      for {
++        (x, vOpt) <- props if !predef.contains(x)
++        _ = addEnv(x, vOpt)
++      } {}
++    }
++
++    // dump result
++    val sb = new StringBuilder
++    sb.append(s"""{"time": ${__SAFE_TOTAL_TIME__}, "analysisTime": ${__SAFE_ANALYSIS_TIME__}, "pass": $pass,"fail": $fail""")
++    if (pass) sb.append(s""", "state": ${collected.toJson}""")
++    sb.append("}")
++    writeWithFileName(s"$BASE_DIR/result.json") { writer =>
++      writer.write(sb.toString)
+     }
+ 
+     Success((cfg, iters, initTP, sem))
+   }
+ 
++  // collector
++  object Collector {
++    // util
++    def escape(raw: String): String = raw.toJson.prettyPrint
++
++    // state
++    case class CState(
++        var env: Map[String, CValue] = Map(),
++        var heap: Map[String, Map[String, CValue]] = Map()
++    ) {
++      def addEnv(id: String, cv: CValue): Unit = { env += id -> cv }
++      def addHeap(loc: Loc, map: Map[String, CValue]): Unit = {
++        heap += loc.toString -> map
++      }
++      def toJson: String = {
++        val sb = new StringBuilder
++
++        sb.append("{")
++
++        // dump env
++        sb.append(s""""env": {""")
++        sb.append(env.map {
++          case (x, cv) => s"""${escape(x)}: ${cv.toJson}"""
++        }.mkString(", "))
++        sb.append("}, ")
++
++        // dump heap
++        sb.append(s""""heap": {""")
++        sb.append(heap.map {
++          case (loc, map) =>
++            val mapStr = map.map {
++              case (x, cv) => s"""${escape(x)}: ${cv.toJson}"""
++            }.mkString(", ")
++            s"""${escape(loc)}: {$mapStr}"""
++        }.mkString(", "))
++        sb.append("}")
++
++        sb.append("}")
++        sb.toString
++      }
++    }
++
++    // flat element
++    trait CFlat[+A] {
++      def toJson: String = this match {
++        case CFlatTop => s"""{"TOP":""}"""
++        case CFlatBot => s"""{"BOT":""}"""
++        case CFlatElem(b: Boolean) => b.toString
++        case CFlatElem(d: Double) =>
++          if (d.isNegInfinity) s"""{"neginf": ""}"""
++          else if (d.isPosInfinity) s"""{"posinf": ""}"""
++          else if (d.isNaN) s"""{"nan": ""}"""
++          else if (d equals -0.0) s"""{"negzero": ""}"""
++          else d.toString
++        case CFlatElem(s: String) => escape(s)
++        case _ => ???
++      }
++    }
++    case object CFlatTop extends CFlat[Nothing]
++    case object CFlatBot extends CFlat[Nothing]
++    case class CFlatElem[A](elem: A) extends CFlat[A]
++
++    // value
++    case class CValue(
++        absent: CFlat[Nothing] = CFlatBot,
++        undefined: CFlat[Nothing] = CFlatBot,
++        nullv: CFlat[Nothing] = CFlatBot,
++        bool: CFlat[Boolean] = CFlatBot,
++        num: CFlat[Double] = CFlatBot,
++        bigint: CFlat[BigInt] = CFlatBot,
++        str: CFlat[String] = CFlatBot,
++        addr: CFlat[String] = CFlatBot
++    ) {
++      def toJson: String = {
++        val sb = new StringBuilder
++        sb.append("{")
++        sb.append(s""""absent": ${absent.toJson},""")
++        sb.append(s""""undefined": ${undefined.toJson},""")
++        sb.append(s""""null": ${nullv.toJson},""")
++        sb.append(s""""bool": ${bool.toJson},""")
++        sb.append(s""""num": ${num.toJson},""")
++        sb.append(s""""bigint": ${bigint.toJson},""")
++        sb.append(s""""str": ${str.toJson},""")
++        sb.append(s""""addr": ${addr.toJson}""")
++        sb.append("}")
++        sb.toString
++      }
++    }
++
++    // convert AbsValue to CValue
++    implicit def convertValue(vOpt: CKeyObject.NVOpt): CValue = {
++      val value = vOpt.value.value
++      val pvalue = value.pvalue
++
++      CValue(
++        absent = vOpt.absent,
++        undefined = pvalue.undefval,
++        nullv = pvalue.nullval,
++        bool = pvalue.boolval,
++        num = pvalue.numval,
++        str = pvalue.strval,
++        addr = value.locset
++      )
++    }
++    implicit def convertAbsent(absV: AbsAbsent): CFlat[Nothing] = absV match {
++      case AbsAbsent.Top => CFlatTop
++      case AbsAbsent.Bot => CFlatBot
++    }
++    implicit def convertUndef(absV: AbsUndef): CFlat[Nothing] = absV match {
++      case AbsUndef.Top => CFlatTop
++      case AbsUndef.Bot => CFlatBot
++    }
++    implicit def convertNull(absV: AbsNull): CFlat[Nothing] = absV match {
++      case AbsNull.Top => CFlatTop
++      case AbsNull.Bot => CFlatBot
++    }
++    implicit def convertBool(absV: AbsBool): CFlat[Boolean] = absV match {
++      case AbsBool.Bot => CFlatBot
++      case AbsBool.True => CFlatElem(true)
++      case AbsBool.False => CFlatElem(false)
++      case AbsBool.Top => CFlatTop
++    }
++    implicit def convertNum(absV: AbsNum): CFlat[Double] = absV.getSingle match {
++      case ConZero => CFlatBot
++      case ConOne(d) => CFlatElem(d)
++      case ConMany => CFlatTop
++    }
++    implicit def convertStr(absV: AbsStr): CFlat[String] = absV.getSingle match {
++      case ConZero => CFlatBot
++      case ConOne(str) => CFlatElem(str)
++      case ConMany => CFlatTop
++    }
++    implicit def convertLoc(absV: LocSet): CFlat[String] = absV.getSingle match {
++      case ConZero => CFlatBot
++      case ConOne(loc) => CFlatElem(loc.toString)
++      case ConMany => CFlatTop
++    }
++  }
++
+   def defaultConfig: AnalyzeConfig = AnalyzeConfig()
+   val options: List[PhaseOption[AnalyzeConfig]] = List(
+     ("silent", BoolOption(c => c.silent = true),

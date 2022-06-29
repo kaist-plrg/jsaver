@@ -49,7 +49,7 @@ case object Analyze extends Phase[Script, AnalyzeConfig, AbsSemantics] {
     ("loop-depth", NumOption((c, i) => LOOP_DEPTH = i),
       "set maximum loop depth."),
     ("js-k-cfa", NumOption((c, i) => JS_CALL_DEPTH = i),
-      "set k for JavaScrpt callsite sensitivity."),
+      "set k for JavaScript callsite sensitivity."),
     ("ir-k-cfa", NumOption((c, i) => IR_CALL_DEPTH = i),
       "set k for IRES callsite sensitivity."),
     ("timeout", NumOption((c, i) => c.timeout = if (i == 0) None else Some(i)),

@@ -1,0 +1,71 @@
+var _this = this;
+
+function _newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+// This file was procedurally generated from the following sources:
+// - src/async-functions/returns-async-arrow-returns-newtarget.case
+// - src/async-functions/evaluation/async-obj-method.template
+
+/*---
+description: Async function returns an async function. (Async method)
+esid: prod-AsyncMethod
+features: [async-functions]
+flags: [generated, async]
+info: |
+    Async Function Definitions
+
+    AsyncMethod :
+      async [no LineTerminator here] PropertyName ( UniqueFormalParameters ) { AsyncFunctionBody }
+
+---*/
+var count = 0;
+var obj = {
+  method: function method(x) {
+    var _newtarget = this instanceof method ? this.constructor : void 0;
+
+    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              return _context2.abrupt("return", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+                return regeneratorRuntime.wrap(function _callee$(_context) {
+                  while (1) {
+                    switch (_context.prev = _context.next) {
+                      case 0:
+                        return _context.abrupt("return", _newtarget);
+
+                      case 1:
+                      case "end":
+                        return _context.stop();
+                    }
+                  }
+                }, _callee);
+              })));
+
+            case 1:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, _callee2);
+    }))();
+  }
+}; // Stores a reference `asyncFn` for case evaluation
+
+var asyncFn = obj.method;
+asyncFn().then(function (retFn) {
+  _newArrowCheck(this, _this);
+
+  count++;
+  return retFn();
+}.bind(this)).then(function (result) {
+  _newArrowCheck(this, _this);
+
+  assert.sameValue(result, undefined);
+  assert.sameValue(count, 1);
+}.bind(this)).then($DONE, $DONE);

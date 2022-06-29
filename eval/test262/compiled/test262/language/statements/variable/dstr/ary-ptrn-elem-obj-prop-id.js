@@ -1,0 +1,55 @@
+// This file was procedurally generated from the following sources:
+// - src/dstr-binding/ary-ptrn-elem-obj-prop-id.case
+// - src/dstr-binding/default/var-stmt.template
+
+/*---
+description: BindingElement with object binding pattern and initializer is not used (`var` statement)
+esid: sec-variable-statement-runtime-semantics-evaluation
+features: [destructuring-binding]
+flags: [generated]
+info: |
+    VariableDeclaration : BindingPattern Initializer
+
+    1. Let rhs be the result of evaluating Initializer.
+    2. Let rval be GetValue(rhs).
+    3. ReturnIfAbrupt(rval).
+    4. Return the result of performing BindingInitialization for
+       BindingPattern passing rval and undefined as arguments.
+
+    13.3.3.6 Runtime Semantics: IteratorBindingInitialization
+
+    BindingElement : BindingPatternInitializer opt
+
+    [...]
+    2. If iteratorRecord.[[done]] is true, let v be undefined.
+    3. If Initializer is present and v is undefined, then
+       a. Let defaultValue be the result of evaluating Initializer.
+       b. Let v be ? GetValue(defaultValue).
+    4. Return the result of performing BindingInitialization of BindingPattern
+       with v and environment as the arguments.
+---*/
+var _u$w$y = {
+  u: 777,
+  w: 888,
+  y: 999
+};
+_u$w$y = _u$w$y === void 0 ? {
+  u: 444,
+  w: 555,
+  y: 666
+} : _u$w$y;
+var v = _u$w$y.u,
+    x = _u$w$y.w,
+    z = _u$w$y.y;
+assert.sameValue(v, 777);
+assert.sameValue(x, 888);
+assert.sameValue(z, 999);
+assert["throws"](ReferenceError, function () {
+  u;
+});
+assert["throws"](ReferenceError, function () {
+  w;
+});
+assert["throws"](ReferenceError, function () {
+  y;
+});

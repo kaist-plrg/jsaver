@@ -66,9 +66,11 @@ with the following sub-commands:
   definitional interpreter.
   - `-analyze:version={string}` is given, set the git version of ecma262.
   - `-analyze:repl={string}` is given, use a REPL for meta-level static analysis.
+  - `-analyze:num={string}` is given, set number domain (`flat` or `interval`).
+  - `-analyze:str={string}` is given, set string domain (`set-k`, `char-inc`, or `prefix-suffix`).
   - `-analyze:loop-iter={number}` is given, set maximum loop iteration.
   - `-analyze:loop-depth={number}` is given, set maximum loop depth.
-  - `-analyze:js-k-cfa={number}` is given, set k for JavaScrpt callsite sensitivity.
+  - `-analyze:js-k-cfa={number}` is given, set k for JavaScript callsite sensitivity.
   - `-analyze:ir-k-cfa={number}` is given, set k for IRES callsite sensitivity.
   - `-analyze:timeout={number}` is given, set timeout of analyzer (second), 0 for unlimited.
 
@@ -186,11 +188,38 @@ stop for debugging
 
 ## How To Reproduce Evaluation Results
 
-TODO
+Now, we explain how to reproduce evaluation results for each figure and table.
+Please go to the `eval` directory and install npm and pip3 packages for the
+reproduction process.
+```bash
+$ cd $JSAVER_HOME/eval
+$ npm install
+$ pip3 install seaborn
+```
 
 ### Raw Data Creation
 
-TODO
+In the `$JSAVER_HOME/eval/raw` directory, we store the raw data of evaluation
+results. If you want to create them yourself, please follow the below
+instructions.
+
+- `concrete`
+
+```bash
+$ node index.js -a
+```
+
+```bash
+# TAJS - Type Analyzer for JavaScript
+$ git clone https://github.com/cs-au-dk/TAJS.git
+# SAFE - Scalable Analysis Framework for ECMAScript Version 2.0
+$ git clone git@github.com:sukyoung/safe.git
+```
+Then, please set the environment variables:
+```bash
+export TAJS_HOME="<path to TAJS>"
+export SAFE_HOME="<path to SAFE>"
+```
 
 ### RQ1) Soundness (Section 6.1)
 

@@ -1,0 +1,316 @@
+diff --git a/src/dk/brics/tajs/Main.java b/src/dk/brics/tajs/Main.java
+index 39cf5726..1bc6c4f3 100644
+--- a/src/dk/brics/tajs/Main.java
++++ b/src/dk/brics/tajs/Main.java
+@@ -68,6 +68,8 @@ import org.apache.log4j.PropertyConfigurator;
+ import org.kohsuke.args4j.CmdLineException;
+ 
+ import java.io.FileWriter;
++import java.io.File;
++import java.io.BufferedWriter;
+ import java.io.IOException;
+ import java.io.PrintWriter;
+ import java.net.URL;
+@@ -90,6 +92,11 @@ public class Main {
+ 
+     private static Logger log = Logger.getLogger(Main.class);
+ 
++    // measure time
++    public static long START_TIME = -1L;
++    public static long END_TIME = -1L;
++    public static long ONLY_ANALYSIS_TIME = -1L;
++
+     private Main() {
+     }
+ 
+@@ -101,6 +108,19 @@ public class Main {
+     public static void main(String[] args) {
+         try {
+             initLogging();
++
++            // dump failed first
++            try {
++              File f = new File(System.getenv("TAJS_HOME") + "/result.json");
++              BufferedWriter writer = new BufferedWriter(new FileWriter(f));
++              writer.write("{\"error\": true}");
++              writer.close();
++            } catch (IOException e) {}
++            
++            // start measure time
++            START_TIME = System.currentTimeMillis();
++
++            // run analysis
+             Analysis a = init(args, null);
+             if (a == null)
+                 System.exit(-1);
+@@ -383,15 +403,17 @@ public class Main {
+         }
+ 
+         long elapsed = System.currentTimeMillis() - time;
++        END_TIME = System.currentTimeMillis();
++        ONLY_ANALYSIS_TIME = elapsed;
++
+         if (Options.get().isTimingEnabled())
+             log.info("Analysis finished in " + elapsed + "ms");
+ 
+         if (Options.get().isFlowGraphEnabled())
+             dumpFlowGraph(analysis.getSolver().getFlowGraph(), true);
+-
+-        enterPhase(AnalysisPhase.SCAN, monitoring);
+-        analysis.getSolver().scan();
+-        leavePhase(AnalysisPhase.SCAN, monitoring);
++        
++        // dump state
++        analysis.getSolver().dumpState();
+     }
+ 
+     /**
+diff --git a/src/dk/brics/tajs/lattice/State.java b/src/dk/brics/tajs/lattice/State.java
+index aad33faf..a012a552 100644
+--- a/src/dk/brics/tajs/lattice/State.java
++++ b/src/dk/brics/tajs/lattice/State.java
+@@ -71,7 +71,7 @@ public class State implements IState<State, Context, CallEdge> {
+     /**
+      * Map from ObjectLabel to Object.
+      */
+-    private Map<ObjectLabel, Obj> store;
++    public Map<ObjectLabel, Obj> store;
+ 
+     private Obj store_default; // either the none obj (for program entry) or the unknown obj (all other locations)
+ 
+@@ -82,7 +82,7 @@ public class State implements IState<State, Context, CallEdge> {
+      * Entries may be overridden by 'store'.
+      * Not used if lazy propagation is enabled.
+      */
+-    private Map<ObjectLabel, Obj> basis_store;
++    public Map<ObjectLabel, Obj> basis_store;
+ 
+     /**
+      * Current execution context.
+diff --git a/src/dk/brics/tajs/solver/GenericSolver.java b/src/dk/brics/tajs/solver/GenericSolver.java
+index 35cfc7df..b024d1d4 100644
+--- a/src/dk/brics/tajs/solver/GenericSolver.java
++++ b/src/dk/brics/tajs/solver/GenericSolver.java
+@@ -16,6 +16,7 @@
+ 
+ package dk.brics.tajs.solver;
+ 
++import dk.brics.tajs.Main;
+ import dk.brics.tajs.flowgraph.AbstractNode;
+ import dk.brics.tajs.flowgraph.BasicBlock;
+ import dk.brics.tajs.flowgraph.FlowGraph;
+@@ -24,13 +25,32 @@ import dk.brics.tajs.options.Options;
+ import dk.brics.tajs.solver.IAnalysisLatticeElement.MergeResult;
+ import dk.brics.tajs.util.AnalysisException;
+ import dk.brics.tajs.util.AnalysisLimitationException;
++import static dk.brics.tajs.util.Collections.newMap;
++import static dk.brics.tajs.util.Collections.newSet;
+ import net.htmlparser.jericho.Source;
+ import org.apache.log4j.Logger;
++import dk.brics.tajs.lattice.State;
++import dk.brics.tajs.lattice.ExecutionContext;
++import dk.brics.tajs.lattice.ObjectLabel;
++import dk.brics.tajs.lattice.Obj;
++import dk.brics.tajs.lattice.PKey;
++import dk.brics.tajs.lattice.Value;
++import dk.brics.tajs.lattice.UnknownValueResolver;
++import dk.brics.tajs.lattice.PKey.StringPKey;
+ 
+ import java.util.Iterator;
+ import java.util.Locale;
++import java.util.Set;
++import java.util.Map;
+ import java.util.Map.Entry;
+ import java.util.function.Supplier;
++import java.util.StringJoiner;
++import org.apache.commons.text.StringEscapeUtils;
++import static java.util.stream.Collectors.joining;
++import java.io.BufferedWriter;
++import java.io.File;
++import java.io.FileWriter;
++import java.io.IOException;
+ 
+ /**
+  * Generic fixpoint solver for flow graphs.
+@@ -444,6 +464,181 @@ public class GenericSolver<StateType extends IState<StateType, ContextType, Call
+             return true;
+         }
+     }
++    
++    public void print(String s) {
++      System.out.print(s);
++    }
++    
++    public void println(String s) {
++      System.out.println(s);
++    }
++    
++    static public String STR_BOT = "{\"BOT\": \"\"}";
++    static public String STR_TOP = "{\"TOP\": \"\"}";
++    static public String NUM_NAN = "{\"nan\": \"\"}";
++    static public String NUM_NEG_ZERO = "{\"negzero\": \"\"}";
++    
++    public String dumpValue(Value v) {
++      StringBuilder sb = new StringBuilder();
++      sb.append("{");
++
++      // primitives
++      sb.append("\"absent\": " + (v.isNotAbsent() ? STR_BOT : STR_TOP) + ","); // absent
++      sb.append("\"undefined\": " + (v.isNotUndef() ? STR_BOT : STR_TOP) + ","); // undefined
++      sb.append("\"null\": " + (v.isNotNull() ? STR_BOT : STR_TOP) + ","); // null
++
++      // bool
++      sb.append("\"bool\": ");
++      if (v.isNotBool()) sb.append(STR_BOT);
++      else if (v.isMaybeTrueButNotFalse()) sb.append("true");
++      else if (v.isMaybeFalseButNotTrue()) sb.append("false"); 
++      else sb.append(STR_TOP);
++      sb.append(",");
++
++      // num
++      sb.append("\"num\": ");
++      Value nv = v.restrictToNum();
++      if (v.isNotNum()) sb.append(STR_BOT);
++      else if (nv.isNaN()) sb.append(NUM_NAN); // nan
++      else if (nv.isMaybeSingleNum()) { // sigleton number
++        if (nv.getNum().equals(-0.0)) sb.append(NUM_NEG_ZERO); // -0
++        else sb.append(nv.getNum()); // otherwise
++      }
++      else sb.append(STR_TOP); // infinity is not singleton
++      sb.append(",");
++
++      // bigint
++      sb.append("\"bigint\": " + STR_BOT + ","); // bigint is always bottom in TAJS
++
++      // string
++      sb.append("\"str\": ");
++      if (v.isNotStr()) sb.append(STR_BOT);
++      else if (v.isMaybeSingleStr()) sb.append("\"" + StringEscapeUtils.escapeJson(v.getStr()) + "\""); // singleton string
++      else sb.append(STR_TOP);
++      sb.append(",");
++
++      // reference
++      sb.append("\"addr\": ");
++      Set<ObjectLabel> addrs = v.getAllObjectLabels();
++      if (addrs.size() == 0) sb.append(STR_BOT);
++      else if (addrs.size() > 1) sb.append(STR_TOP);
++      else {
++        ObjectLabel addr = (ObjectLabel)addrs.toArray()[0];
++        sb.append("\"" + StringEscapeUtils.escapeJson(addr.toString()) + "\"");
++      }
++
++      sb.append("}");
++      return sb.toString();
++    }
++    
++    public String dumpProperties(Obj obj, State st) {
++      StringBuilder sb = new StringBuilder();
++      Set<PKey> raw_props = obj.getPropertyNames();
++
++      Set<PKey> props = newSet();
++      for(PKey p: raw_props) {
++        if (p instanceof StringPKey)
++          props.add(p);
++      }
++
++      if (props.size() > 0) {
++        StringJoiner joiner = new StringJoiner(",");
++        for (PKey prop : props) {
++          Value v = UnknownValueResolver.getRealValue(obj.getProperty(prop), st);
++          joiner.add("\"" + StringEscapeUtils.escapeJson(prop.toString()) + "\": " + dumpValue(v));
++        }
++        sb.append("{" + joiner.toString() + "}");
++      } else sb.append("{}");
++      return sb.toString();
++    }
++    
++    public boolean exists(String filename) {
++      File f = new File(System.getenv("TAJS_HOME") + "/" + filename);
++      return f.exists();
++    }
++
++    public void touch(String filename) {
++      try {
++        File f = new File(System.getenv("TAJS_HOME") + "/" + filename);
++        if (!f.exists())
++          f.createNewFile();
++      } catch (IOException e) { }
++    }
++    
++    public void remove(String filename) {
++      String path = System.getenv("TAJS_HOME") + "/" + filename;
++      if (exists(path)) {
++        File f = new File(path);
++        f.delete();
++      }
++    }
++    
++    public void dumpFile(String content, String filename) {
++      try {
++        File f = new File(System.getenv("TAJS_HOME") + "/" + filename);
++        FileWriter fw = new FileWriter(f);
++        BufferedWriter writer = new BufferedWriter(fw);
++        writer.write(content);
++        writer.close();
++      } catch (IOException e) {}
++    }
++    
++    public void dumpState() {
++        remove("result.json");
++
++        Function mainFunc = flowgraph.getMain();
++        BasicBlock exit = mainFunc.getOrdinaryExit();
++        BasicBlock exitExcept = mainFunc.getExceptionalExit();
++
++        Set<Entry<ContextType, StateType>> exitStates = the_analysis_lattice_element.getStates(exit).entrySet();
++        Set<Entry<ContextType, StateType>> exitExceptStates = the_analysis_lattice_element.getStates(exitExcept).entrySet();
++        boolean passed = exitStates.size() > 0;
++        boolean failed = exitExceptStates.size() > 0; 
++        
++        StringBuilder result = new StringBuilder();
++        result.append("{");
++        result.append("\"time\": " + ((Main.END_TIME - Main.START_TIME) / 1000.0) + ",");
++        result.append("\"analysisTime\": " + (Main.ONLY_ANALYSIS_TIME / 1000.0) + ",");
++        result.append("\"pass\": " + passed + ",");
++        result.append("\"fail\": " + failed);
++        
++        if (passed) {
++          result.append(",\"state\":");
++
++          Entry<ContextType, StateType> me = (Entry<ContextType, StateType>)exitStates.toArray()[0];
++          State st = (State)me.getValue().clone();
++          ExecutionContext ctxt = st.getExecutionContext();
++          ObjectLabel globalLabel = (ObjectLabel)ctxt.getObjectLabels().toArray()[0];
++          Obj globalObj = st.getObject(globalLabel, false);
++          Set<ObjectLabel> labels = newSet();
++          if (st.basis_store != null) {
++            for (Entry<ObjectLabel, Obj> entry: st.basis_store.entrySet()) {
++              labels.add(entry.getKey());
++            }
++          }
++          if (st.store != null) {
++            for (Entry<ObjectLabel, Obj> entry: st.store.entrySet()) {
++              labels.add(entry.getKey());
++            }
++          }
++          
++          result.append("{");
++          result.append("\"env\": " + dumpProperties(globalObj, st) + ",");
++          result.append("\"heap\": {");
++          StringJoiner joiner = new StringJoiner(",");
++          for(ObjectLabel label : labels) {
++            StringBuilder sb0 = new StringBuilder();
++            Obj obj = st.getObject(label, false);
++            sb0.append("\"" + StringEscapeUtils.escapeJson(label.toString()) + "\": " + dumpProperties(obj, st));
++            joiner.add(sb0.toString());
++          }
++          result.append(joiner.toString());
++          result.append("}}");
++        }
++        result.append("}");
++        
++        dumpFile(result.toString(), "result.json");
++    }
+ 
+     /**
+      * Scans for messages. Takes one round through all nodes and all contexts without invoking <code>propagate</code>.

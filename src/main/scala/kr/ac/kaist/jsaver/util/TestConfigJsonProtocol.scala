@@ -1,6 +1,5 @@
 package kr.ac.kaist.jsaver.util
 
-import kr.ac.kaist.jsaver.DEBUG
 import kr.ac.kaist.jsaver.parser.{ MetaParser, MetaData }
 import io.circe._, io.circe.generic.semiauto._, io.circe.generic.auto._
 
@@ -25,13 +24,13 @@ object TestConfigJsonProtocol {
 
 case class TestList(list: List[MetaData]) {
   def length: Int = list.length
-  def remove(desc: String, f: MetaData => Boolean): TestList = {
+  def remove(desc: String, f: MetaData => Boolean, silent: Boolean = false): TestList = {
     val (filtered, removed) = list.foldLeft(List[MetaData](), 0) {
       case ((l, count), meta) =>
         if (f(meta)) (l, count + 1)
         else (meta :: l, count)
     }
-    if (DEBUG) println(f"$desc%-30s: $removed tests are removed")
+    if (!silent) println(f"$desc%-30s: $removed tests are removed")
     TestList(filtered.reverse)
   }
   def getSummary: Test262ConfigSummary = {

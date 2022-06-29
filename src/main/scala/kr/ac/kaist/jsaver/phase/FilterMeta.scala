@@ -14,7 +14,7 @@ import kr.ac.kaist.jsaver.util.TestConfigJsonProtocol._
 // FilterMeta phase
 case object FilterMeta extends Phase[Unit, FilterMetaConfig, Test262ConfigSummary] {
   val name = "filter-meta"
-  val help = "extracts and filters out metadata of test262 tests."
+  val help = "extracts and filters out metadata of Test262 tests."
 
   val standardFeatures = List(
     "ArrayBuffer",

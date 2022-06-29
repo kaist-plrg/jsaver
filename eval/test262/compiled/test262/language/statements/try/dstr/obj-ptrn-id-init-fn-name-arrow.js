@@ -1,0 +1,48 @@
+var _this = this;
+
+function _newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
+
+// This file was procedurally generated from the following sources:
+// - src/dstr-binding/obj-ptrn-id-init-fn-name-arrow.case
+// - src/dstr-binding/default/try.template
+
+/*---
+description: SingleNameBinding assigns `name` to arrow functions (try statement)
+esid: sec-runtime-semantics-catchclauseevaluation
+features: [destructuring-binding]
+flags: [generated]
+info: |
+    Catch : catch ( CatchParameter ) Block
+
+    [...]
+    5. Let status be the result of performing BindingInitialization for
+       CatchParameter passing thrownValue and catchEnv as arguments.
+    [...]
+
+    13.3.3.7 Runtime Semantics: KeyedBindingInitialization
+
+    SingleNameBinding : BindingIdentifier Initializeropt
+
+    [...]
+    6. If Initializer is present and v is undefined, then
+       [...]
+       d. If IsAnonymousFunctionDefinition(Initializer) is true, then
+          i. Let hasNameProperty be HasOwnProperty(v, "name").
+          ii. ReturnIfAbrupt(hasNameProperty).
+          iii. If hasNameProperty is false, perform SetFunctionName(v,
+               bindingId).
+---*/
+var ranCatch = false;
+
+try {
+  throw {};
+} catch (_ref) {
+  var _ref$arrow = _ref.arrow;
+  var arrow = _ref$arrow === void 0 ? function () {
+    _newArrowCheck(this, _this);
+  }.bind(this) : _ref$arrow;
+  assert.sameValue(arrow.name, 'arrow');
+  ranCatch = true;
+}
+
+assert(ranCatch, 'executed `catch` block');
