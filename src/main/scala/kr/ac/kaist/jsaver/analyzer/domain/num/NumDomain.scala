@@ -6,9 +6,20 @@ trait NumDomain extends Domain {
   // get intervals
   def getInterval(from: Double, to: Double): Elem
 
-  // number operators
-  implicit def ElemOp(elem: Elem): NumOp
-  trait NumOp {
+  // element
+  type Elem <: ElemTrait
+
+  // top element
+  val Top: Elem
+
+  // abstraction functions
+  def apply(elems: Num*): Elem
+  def apply(elems: Iterable[Num]): Elem
+
+  // element traits
+  trait ElemTrait extends Iterable[Num] with super.ElemTrait { this: Elem =>
+    def ⊓(that: Elem): Elem
+    def getSingle: Flat[Num]
     def plus(that: Elem): Elem
     def plusInt(that: AbsInt): Elem
     def mul(that: Elem): Elem

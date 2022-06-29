@@ -45,7 +45,7 @@ object IntervalNum extends NumDomain {
   }
 
   // elements
-  sealed trait Elem extends Iterable[Num] with ElemTrait {
+  sealed trait Elem extends ElemTrait {
     // partial order
     def ⊑(that: Elem): Boolean = (this, that) match {
       case (Bot, _) => true
@@ -108,12 +108,9 @@ object IntervalNum extends NumDomain {
       case Interval(from, to) => getInterval(from, to)
       case _ => this
     }
-  }
 
-  // integer operators
-  implicit class ElemOp(elem: Elem) extends NumOp {
-    def plus(that: Elem): Elem = aux(_ + _)(elem, that)
-    def mul(that: Elem): Elem = aux(_ * _)(elem, that)
+    def plus(that: Elem): Elem = aux(_ + _)(this, that)
+    def mul(that: Elem): Elem = aux(_ * _)(this, that)
     private def aux(op: (Double, Double) => Double): (Elem, Elem) => Elem = {
       def f(left: Elem, right: Elem): Elem = (left, right) match {
         case (Bot, _) | (_, Bot) => Bot
@@ -125,8 +122,8 @@ object IntervalNum extends NumDomain {
       }
       f
     }
-    def plusInt(that: AbsInt): Elem = auxInt(_ + _)(elem, that.getSingle)
-    def mulInt(that: AbsInt): Elem = auxInt(_ * _)(elem, that.getSingle)
+    def plusInt(that: AbsInt): Elem = auxInt(_ + _)(this, that.getSingle)
+    def mulInt(that: AbsInt): Elem = auxInt(_ * _)(this, that.getSingle)
     private def auxInt(op: (Double, Long) => Double): (Elem, Flat[INum]) => Elem = {
       case (Bot, _) | (_, FlatBot) => Bot
       case (Single(Num(l)), FlatElem(INum(r))) => Single(Num(op(l, r)))

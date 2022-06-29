@@ -53,7 +53,7 @@ object PrefixSuffixStr extends StrDomain {
     aux(l.toList.reverse, r.toList.reverse, Nil).reverse.mkString
 
   // elements
-  sealed trait Elem extends Iterable[Str] with ElemTrait {
+  sealed trait Elem extends ElemTrait {
     // partial order
     def ⊑(that: Elem): Boolean = (this, that) match {
       case (Bot, _) => true
@@ -108,11 +108,8 @@ object PrefixSuffixStr extends StrDomain {
       case Single(str) => Some(str)
       case _ => exploded(s"cannot iterate: $this")
     }).iterator
-  }
 
-  // string operators
-  implicit class ElemOp(elem: Elem) extends StrOp {
-    def plus(that: Elem): Elem = (elem, that) match {
+    def plus(that: Elem): Elem = (this, that) match {
       case (Bot, _) | (_, Bot) => Bot
       case (Single(Str(l)), Single(Str(r))) => Single(Str(l + r))
       case (PrefixSuffix(lprefix, _), PrefixSuffix(_, rsuffix)) =>
@@ -123,7 +120,7 @@ object PrefixSuffixStr extends StrDomain {
         PrefixSuffix(lprefix, lsuffix + r)
       case (l, r) => l.toPrefixSuffix plus r.toPrefixSuffix
     }
-    def plusNum(that: AbsNum): Elem = (elem, that.getSingle) match {
+    def plusNum(that: AbsNum): Elem = (this, that.getSingle) match {
       case (Bot, _) | (_, FlatBot) => Bot
       case (Top, _) | (_, FlatTop) => Top
       case (Single(Str(l)), FlatElem(Num(r))) =>
