@@ -8,7 +8,7 @@ object MetaParser {
     val relName =
       if (!filename.startsWith(TEST262_TEST_DIR)) filename
       else filename.drop(TEST262_TEST_DIR.length + 1)
-    val source = Source.fromFile(filename)
+    val source = Source.fromFile(filename, "utf8")
     val lines = try source.getLines.toList finally source.close()
     val metadata = lines.dropWhile((x) => !(x contains "/*---")) match {
       case Nil => Nil
