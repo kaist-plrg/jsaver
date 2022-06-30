@@ -388,4 +388,64 @@ Then, copy and paste the data in `output/configurability.csv` to the
 
 ### RQ4) Adaptability (Section 6.4 - Figure 12 / Figure 13)
 
-TODO
+#### Pipeline Operator (`|>`)
+
+```bash
+# change the git version
+$ git checkout proposal-pipeline-operator
+
+# re-build JSAVER
+$ cd $JSAVER_HOME && sbt assembly && cd eval
+
+# analysis of the example code in Figure 13 with
+# the internval number domain (-analyze:num=interval)
+$ jsaver analyze data/figure-12/pipeline-operator-example.js \
+    -analyze:repl \
+    -analyze:num=interval
+...
+
+analyzer> continue
+...
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.a.BoundValue
+[2.0, 200.0]
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.b.BoundValue
+absent
+
+analyzer> print -return
+{~throw~ -> ... @ {
+  #18:... -> OrdinaryObject {
+    ...
+    [11] "Prototype" -> #GLOBAL.TypeError.prototype
+    ...
+  }
+```
+
+#### `Observable` Library
+
+```bash
+# change the git version
+$ git checkout proposal-observable
+
+# re-build JSAVER
+$ cd $JSAVER_HOME && sbt assembly && cd eval
+
+# analysis of the example code in Figure 13 with
+# the internval number domain (-analyze:num=interval)
+# and the prefix-suffix string domain (-analyze:str=prefix-suffix)
+$ jsaver analyze data/figure-13/observable-example.js \
+    -analyze:repl \
+    -analyze:num=interval \
+    -analyze:str=prefix-suffix
+...
+
+analyzer> continue
+...
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.x.BoundValue
+[6.0, 12.0]
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.y.BoundValue
+<*, *123>
+```

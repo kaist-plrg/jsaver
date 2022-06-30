@@ -11,7 +11,7 @@ case object CmdPrint extends Command(
   "print", "Print specific information"
 ) {
   // options
-  val options @ List(reachLoc, expr) = List("reach-loc", "expr")
+  val options @ List(reachLoc, ret, expr) = List("reach-loc", "return", "expr")
 
   // run command
   def apply(
@@ -24,6 +24,15 @@ case object CmdPrint extends Command(
       case s"-${ `reachLoc` }" :: _ => {
         val st = repl.sem.getState(cp)
         st.reachableLocs.foreach(println _)
+      }
+      case s"-${ `ret` }" :: _ => {
+        val sem = repl.sem
+        val v = cp match {
+          case np: NodePoint[Node] => println("no return value")
+          case rp: ReturnPoint =>
+            val ret = sem(rp)
+            println(ret.state.getString(ret.value))
+        }
       }
       case s"-${ `expr` }" :: str :: _ => {
         val sem = repl.sem
