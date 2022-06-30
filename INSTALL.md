@@ -42,7 +42,9 @@ The `<path to JSAVER>` should be the _absolute path_ of JSAVER repository.
 
 ## Installation of JSAVER using `sbt`
 ```bash
+$ cd $JSAVER_HOME
 $ sbt assembly
+$ source java-opts
 ```
 
 > **NOTE**: It might take several minutes at the first time because of the

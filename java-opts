@@ -1,0 +1,6 @@
+# for Java option
+export JAVA_OPTS="$JAVA_OPTS -Xms16g"
+export JAVA_OPTS="$JAVA_OPTS -Xmx32g"
+export JAVA_OPTS="$JAVA_OPTS -Xss1g"
+export JAVA_OPTS="$JAVA_OPTS -Xmn512m"
+export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=utf8"
