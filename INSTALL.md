@@ -73,6 +73,10 @@ with the following sub-commands:
   - `-analyze:js-k-cfa={number}` is given, set k for JavaScript callsite sensitivity.
   - `-analyze:ir-k-cfa={number}` is given, set k for IRES callsite sensitivity.
   - `-analyze:timeout={number}` is given, set timeout of analyzer (second), 0 for unlimited.
+- `collect` collects the final concrete/abstract state of a JavaScript program
+    (used only for evaluation).
+  - `-collect:concrete` is given, collect concrete state.
+  - `-collect:js-k-cfa={number}` is given, set k for JavaScript callsite sensitivity.
 
 and global options:
 - `-silent` is given, do not show final results.
@@ -312,7 +316,7 @@ First, please create the `output/soundness.csv` file using the following command
 $ node index -s
 ```
 Then, copy and paste the data in `output/soundness.csv` to the `data` tab in
-the `graph.xlsx` file. Remaining tabs show Figure 8 (a)-(e):
+the `output/soundness.xlsx` file. Remaining tabs show Figure 8 (a)-(e):
 - **(a)** `tajs` tab
 - **(b)** `safe` tab
 - **(c)** `jsaver` tab
@@ -380,7 +384,7 @@ First, please create the `output/configurability.csv` file using the following c
 $ node index -c
 ```
 Then, copy and paste the data in `output/configurability.csv` to the
-`graph.xlsx` file. It shows the chart in Figure 11.
+`output/configurability.xlsx` file. It shows the chart in Figure 11.
 
 ### RQ4) Adaptability (Section 6.4 - Figure 12 / Figure 13)
 
