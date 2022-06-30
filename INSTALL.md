@@ -249,8 +249,8 @@ $ unzip raw/safe.zip -d raw
 $ unzip raw/safe-compiled.zip -d raw
 ```
 > **NOTE**: We recommend using the archived raw data because it requires more
-> than **10 hours** to create them from the scratch.  Nevertheless, if you want
-> to do it yourself, please follow the below instructions.
+> than **10 hours** to create them from scratch.  Nevertheless, if you want to
+> do it yourself, please follow the below instructions.
 
 #### 1) JSAVER
 
@@ -316,7 +316,7 @@ First, please create the `output/soundness.csv` file using the following command
 $ node index -s
 ```
 Then, copy and paste the data in `output/soundness.csv` to the `data` tab in
-the `output/soundness.xlsx` file. Remaining tabs show Figure 8 (a)-(e):
+the `output/soundness.xlsx` file. The remaining tabs show Figure 8 (a)-(e):
 - **(a)** `tajs` tab
 - **(b)** `safe` tab
 - **(c)** `jsaver` tab
@@ -344,7 +344,8 @@ The JavaScript code of Figure 10 is stored in
 Set_ ($\textsf{SS}_5$) domain and check the analysis result using REPL of
 JSAVER:
 ```bash
-$ jsaver analyze data/figure-10/template-literal-example.js -analyze:repl -analyze:str=set-5
+$ jsaver analyze data/figure-10/template-literal-example.js \
+    -analyze:repl -analyze:str=set-5
 ========================================
  parse phase
 ----------------------------------------
@@ -365,16 +366,53 @@ analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.y.BoundValue
 
 analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.z.BoundValue
 {"aea", "aeb", "bea", "beb"}
+
+analyzer> exit
+stop for debugging
 ```
 
-Similarly, you can analyze this program with different abstract string domain,
-such as _Character Inclusion_ ($\textsf{CI}$) and _Prefix-Suffix_ ($\textsf{PS}$) with `-analyze:str=char-inc` and `-analyze:str=prefix-suffix` options, respectively:
+Similarly, you can analyze this program with different abstract string domains,
+such as _Character Inclusion_ ($\textsf{CI}$) and _Prefix-Suffix_
+($\textsf{PS}$) with `-analyze:str=char-inc` and `-analyze:str=prefix-suffix`
+options, respectively:
 ```bash
-$ jsaver analyze data/figure-10/template-literal-example.js -analyze:repl -analyze:str=char-inc
+$ jsaver analyze data/figure-10/template-literal-example.js \
+    -analyze:repl -analyze:str=char-inc
 ...
 
-$ jsaver analyze data/figure-10/template-literal-example.js -analyze:repl -analyze:str=prefix-suffix
+analyzer> continue
 ...
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.x.BoundValue
+<[], [ab]>
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.y.BoundValue
+<[cd], [abcd]>
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.z.BoundValue
+<[e], [abe]>
+
+analyzer> exit
+stop for debugging
+
+$ jsaver analyze data/figure-10/template-literal-example.js \
+    -analyze:repl -analyze:str=prefix-suffix
+...
+
+analyzer> continue
+...
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.x.BoundValue
+str
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.y.BoundValue
+<c*, *d>
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.z.BoundValue
+str
+
+analyzer> exit
+stop for debugging
 ```
 
 #### Analysis Sensitivities
@@ -384,7 +422,7 @@ First, please create the `output/configurability.csv` file using the following c
 $ node index -c
 ```
 Then, copy and paste the data in `output/configurability.csv` to the
-`output/configurability.xlsx` file. It shows the chart in Figure 11.
+`output/configurability.xlsx` file. You can see charts in Figure 11.
 
 ### RQ4) Adaptability (Section 6.4 - Figure 12 / Figure 13)
 
@@ -400,8 +438,7 @@ $ cd $JSAVER_HOME && sbt assembly && cd eval
 # analysis of the example code in Figure 13 with
 # the internval number domain (-analyze:num=interval)
 $ jsaver analyze data/figure-12/pipeline-operator-example.js \
-    -analyze:repl \
-    -analyze:num=interval
+    -analyze:repl -analyze:num=interval
 ...
 
 analyzer> continue
@@ -420,6 +457,9 @@ analyzer> print -return
     [11] "Prototype" -> #GLOBAL.TypeError.prototype
     ...
   }
+
+analyzer> exit
+stop for debugging
 ```
 
 #### `Observable` Library
@@ -435,9 +475,7 @@ $ cd $JSAVER_HOME && sbt assembly && cd eval
 # the internval number domain (-analyze:num=interval)
 # and the prefix-suffix string domain (-analyze:str=prefix-suffix)
 $ jsaver analyze data/figure-13/observable-example.js \
-    -analyze:repl \
-    -analyze:num=interval \
-    -analyze:str=prefix-suffix
+    -analyze:repl -analyze:num=interval -analyze:str=prefix-suffix
 ...
 
 analyzer> continue
@@ -448,4 +486,7 @@ analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.x.BoundValue
 
 analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.y.BoundValue
 <*, *123>
+
+analyzer> exit
+stop for debugging
 ```
