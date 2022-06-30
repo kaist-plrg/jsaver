@@ -964,7 +964,6 @@ object Parser extends ESParsers {
       log((MATCH ~ CoalesceExpressionHead(List(pIn, pYield, pAwait)) <~ t("??")) ~ BitwiseORExpression(List(pIn, pYield, pAwait)) ^^ { case _ ~ x0 ~ x1 => CoalesceExpression0(x0, x1, args, Span()) })("CoalesceExpression0")
     ))("CoalesceExpression")
   })
-  // TODO automatically synthesize this part: left recursion
   lazy val CoalesceExpressionHead: ESParser[CoalesceExpressionHead] = memo(args => {
     val List(pIn, pYield, pAwait) = getArgsN("CoalesceExpressionHead", args, 3)
     log(resolveLR((
@@ -973,10 +972,18 @@ object Parser extends ESParsers {
       log((MATCH <~ t("??")) ~ BitwiseORExpression(List(pIn, pYield, pAwait)) ^^ { case _ ~ x0 => ((x: CoalesceExpressionHead) => CoalesceExpressionHead0(CoalesceExpression0(x, x0, args, Span()), args, Span())) })("CoalesceExpressionHead0")
     )))("CoalesceExpressionHead")
   })
+  lazy val PipelineExpression: ESParser[PipelineExpression] = memo(args => {
+    val List(pIn, pYield, pAwait) = getArgsN("PipelineExpression", args, 3)
+    log(resolveLR((
+      log(MATCH ~ LogicalORExpression(List(pIn, pYield, pAwait)) ^^ { case _ ~ x0 => PipelineExpression0(x0, args, Span()) })("PipelineExpression0")
+    ), (
+      log((MATCH <~ t("|>")) ~ LogicalORExpression(List(pIn, pYield, false)) ^^ { case _ ~ x0 => ((x: PipelineExpression) => PipelineExpression1(x, x0, args, Span())) })("PipelineExpression1")
+    )))("PipelineExpression")
+  })
   lazy val ShortCircuitExpression: ESParser[ShortCircuitExpression] = memo(args => {
     val List(pIn, pYield, pAwait) = getArgsN("ShortCircuitExpression", args, 3)
     log((
-      log(MATCH ~ LogicalORExpression(List(pIn, pYield, pAwait)) ^^ { case _ ~ x0 => ShortCircuitExpression0(x0, args, Span()) })("ShortCircuitExpression0") |
+      log(MATCH ~ PipelineExpression(List(pIn, pYield, pAwait)) ^^ { case _ ~ x0 => ShortCircuitExpression0(x0, args, Span()) })("ShortCircuitExpression0") |
       log(MATCH ~ CoalesceExpression(List(pIn, pYield, pAwait)) ^^ { case _ ~ x0 => ShortCircuitExpression1(x0, args, Span()) })("ShortCircuitExpression1")
     ))("ShortCircuitExpression")
   })
@@ -1326,7 +1333,6 @@ object Parser extends ESParsers {
       log(MATCH ~ ForInOfStatement(List(pYield, pAwait, pReturn)) ^^ { case _ ~ x0 => IterationStatement3(x0, args, Span()) })("IterationStatement3")
     ))("IterationStatement")
   })
-  // TODO automatically synthesize this part: do-while token for automatic semicolon insertion
   lazy val DoWhileStatement: ESParser[DoWhileStatement] = memo(args => {
     val List(pYield, pAwait, pReturn) = getArgsN("DoWhileStatement", args, 3)
     log((
@@ -1894,6 +1900,7 @@ object Parser extends ESParsers {
     "var" |||
     "import" |||
     ">>>=" |||
+    "|>" |||
     "void" |||
     "default" |||
     "static" |||
@@ -2046,6 +2053,7 @@ object Parser extends ESParsers {
     "LogicalORExpression" -> LogicalORExpression,
     "CoalesceExpression" -> CoalesceExpression,
     "CoalesceExpressionHead" -> CoalesceExpressionHead,
+    "PipelineExpression" -> PipelineExpression,
     "ShortCircuitExpression" -> ShortCircuitExpression,
     "ConditionalExpression" -> ConditionalExpression,
     "AssignmentExpression" -> AssignmentExpression,
