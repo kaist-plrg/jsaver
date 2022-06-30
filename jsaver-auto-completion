@@ -12,12 +12,13 @@ _jsaver_completions() {
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-  cmdList="help extract analyze "
+  cmdList="help extract analyze collect "
   globalOpt="-silent -time "
   helpOpt=""
   extractOpt="-extract:version -extract:genModel "
   parseOpt=""
   analyzeOpt="-analyze:version -analyze:repl -analyze:num -analyze:str -analyze:loop-iter -analyze:loop-depth -analyze:js-k-cfa -analyze:ir-k-cfa -analyze:timeout "
+  collectOpt="-collect:concrete -collect:start -collect:end -collect:js-k-cfa "
 
   # completion for commands
   case "${COMP_CWORD}" in
@@ -42,6 +43,10 @@ _jsaver_completions() {
           ;;
         analyze)
           COMPREPLY=($(compgen -W "${globalOpt} ${analyzeOpt} ${parseOpt}"))
+          return 0
+          ;;
+        collect)
+          COMPREPLY=($(compgen -W "${globalOpt} ${collectOpt}"))
           return 0
           ;;
       esac

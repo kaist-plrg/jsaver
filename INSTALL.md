@@ -196,43 +196,192 @@ $ cd $JSAVER_HOME/eval
 $ npm install
 $ pip3 install seaborn
 ```
+The data of figures and tables are archived in the `data` directory as follows:
+```
+data
+├── figure-10
+│   └── template-literal-example.js
+├── figure-11
+│   └── k-cfa-data.csv
+├── figure-12
+│   ├── pipeline-operator-example.js
+│   └── proposal.md
+├── figure-13
+│   ├── observable-example.js
+│   └── proposal.md
+├── figure-8
+│   └── sound.csv
+├── figure-9
+│   ├── a_precision.csv
+│   └── b_performance.csv
+├── table-1
+│   ├── all
+│   ├── applicable-tests
+│   ├── early-errors
+│   ├── in-progress-features
+│   ├── inapplicable-tests
+│   ├── inessential-built-in-objects
+│   ├── non-strict-and-module
+│   └── web-browser-and-internationalization
+└── table-2
+    └── string-abstract-domain.md
+```
 
 ### Raw Data Creation
 
-In the `$JSAVER_HOME/eval/raw` directory, we store the raw data of evaluation
-results. If you want to create them yourself, please follow the below
-instructions.
+In the `$JSAVER_HOME/eval/raw` directory, we zipped and archived the raw data of
+evaluation results. Please unzip them for the remaining parts:
+```bash
+$ unzip raw/concrete.zip -d raw
+$ unzip raw/jsaver.zip -d raw
+$ unzip raw/jsaver_0.zip -d raw
+$ unzip raw/jsaver_1.zip -d raw
+$ unzip raw/jsaver_2.zip -d raw
+$ unzip raw/jsaver_3.zip -d raw
+$ unzip raw/jsaver_4.zip -d raw
+$ unzip raw/tajs.zip -d raw
+$ unzip raw/tajs-compiled.zip -d raw
+$ unzip raw/safe.zip -d raw
+$ unzip raw/safe-compiled.zip -d raw
+```
+> **NOTE**: We recommend using the archived raw data because it requires more
+> than **10 hours** to create them from the scratch.  Nevertheless, if you want
+> to do it yourself, please follow the below instructions.
 
-- `concrete`
+#### 1) JSAVER
 
 ```bash
+# apply Test262 patch
 $ node index.js -a
+
+# concrete (about 1 hour)
+$ jsaver collect -collect:concrete && mv $JSAVER_HOME/logs/collect/concrete raw
+
+# jsaver (about 1 hour)
+$ jsaver collect && mv $JSAVER_HOME/logs/collect/jsaver raw
+
+# jsaver_k (about 1 hour per k)
+$ jsaver collect -collect:js-k-cfa=0 && mv $JSAVER_HOME/logs/collect/jsaver raw/jsaver_0
+$ jsaver collect -collect:js-k-cfa=1 && mv $JSAVER_HOME/logs/collect/jsaver raw/jsaver_1
+$ jsaver collect -collect:js-k-cfa=2 && mv $JSAVER_HOME/logs/collect/jsaver raw/jsaver_2
+$ jsaver collect -collect:js-k-cfa=3 && mv $JSAVER_HOME/logs/collect/jsaver raw/jsaver_3
+$ jsaver collect -collect:js-k-cfa=4 && mv $JSAVER_HOME/logs/collect/jsaver raw/jsaver_4
+
+# revert Test262 patch
+$ node index.js -r
 ```
+
+#### 2) TAJS
+
+For TAJS, you should first install [Ant](https://ant.apache.org/bindownload.cgi).
 
 ```bash
-# TAJS - Type Analyzer for JavaScript
-$ git clone https://github.com/cs-au-dk/TAJS.git
-# SAFE - Scalable Analysis Framework for ECMAScript Version 2.0
-$ git clone git@github.com:sukyoung/safe.git
+# install TAJS
+$ git clone --recursive https://github.com/cs-au-dk/TAJS.git
+
+# environment setting
+$ export TAJS_HOME="$JSAVER_HOME/eval/TAJS"
+
+# tajs (about 1 hour)
+$ node index.js -t
+
+# tajs-compiled (about 1 hour)
+$ node index.js -t -b
 ```
-Then, please set the environment variables:
+
+#### 3) SAFE
+
 ```bash
-export TAJS_HOME="<path to TAJS>"
-export SAFE_HOME="<path to SAFE>"
+# install SAFE
+$ git clone --recursive https://github.com/sukyoung/safe.git
+
+# environment setting
+$ export SAFE_HOME="$JSAVER_HOME/eval/safe"
+
+# safe (about 1 hour)
+$ node index.js -e
+
+# safe-compiled (about 1 hour)
+$ node index.js -e -b
 ```
 
-### RQ1) Soundness (Section 6.1)
+### RQ1) Soundness (Section 6.1 - Figure 8)
 
-TODO
+First, please create the `output/soundness.csv` file using the following command:
+```bash
+$ node index -s
+```
+Then, copy and paste the data in `output/soundness.csv` to the `data` tab in
+the `graph.xlsx` file. Remaining tabs show Figure 8 (a)-(e):
+- **(a)** `tajs` tab
+- **(b)** `safe` tab
+- **(c)** `jsaver` tab
+- **(d)** `tajs+babel` tab
+- **(e)** `safe+babel` tab
 
-### RQ2) Precision (Section 6.2)
+### RQ2) Precision (Section 6.2 - Figure 9)
 
-TODO
+Please create the `output/plot-data.csv` file and draw Figure 9 using the
+following commands:
+```bash
+# create output/plot-data.csv
+$ node index -p
 
-### RQ3) Configurability (Section 6.3)
+# draw Figure 9 (a) and (b)
+$ python3 plot.py output/plot-data.csv
+```
 
-TODO
+### RQ3) Configurability (Section 6.3 - Figure 10 / Figure 11)
 
-### RQ4) Adaptability (Section 6.4)
+#### Abstract Domain
+
+The JavaScript code of Figure 10 is stored in
+`data/figure-10/template-literal-example.js`. Please analyze it with a _String
+Set_ ($\textsf{SS}_5$) domain and check the analysis result using REPL of
+JSAVER:
+```bash
+$ jsaver analyze data/figure-10/template-literal-example.js -analyze:repl -analyze:str=set-5
+========================================
+ parse phase
+----------------------------------------
+========================================
+ analyze phase
+----------------------------------------
+
+command list: ...
+
+analyzer> continue
+...
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.x.BoundValue
+{"a", "b"}
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.y.BoundValue
+{"cad", "cbd"}
+
+analyzer> print -expr REALM.GlobalEnv.DeclarativeRecord.SubMap.z.BoundValue
+{"aea", "aeb", "bea", "beb"}
+```
+
+Similarly, you can analyze this program with different abstract string domain,
+such as _Character Inclusion_ ($\textsf{CI}$) and _Prefix-Suffix_ ($\textsf{PS}$) with `-analyze:str=char-inc` and `-analyze:str=prefix-suffix` options, respectively:
+```bash
+$ jsaver analyze data/figure-10/template-literal-example.js -analyze:repl -analyze:str=char-inc
+...
+
+$ jsaver analyze data/figure-10/template-literal-example.js -analyze:repl -analyze:str=prefix-suffix
+...
+```
+
+#### Analysis Sensitivities
+
+First, please create the `output/configurability.csv` file using the following command:
+```bash
+$ node index -c
+```
+Then, copy and paste the data in `output/configurability.csv` to the
+`graph.xlsx` file. It shows the chart in Figure 11.
+
+### RQ4) Adaptability (Section 6.4 - Figure 12 / Figure 13)
 
 TODO
