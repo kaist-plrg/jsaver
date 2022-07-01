@@ -1,5 +1,8 @@
 # JSAVER: JavaScript Static Analyzer via ECMAScript Representation
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6785678.svg)](https://doi.org/10.5281/zenodo.6785678)
+[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/jhnaldo/fse22-jsaver)](https://hub.docker.com/repository/docker/jhnaldo/fse22-jsaver)
+
 JSAVER is a JavaScript Static Analyzer via ECMAScript Representation.  It is the
 first tool that automatically derives JavaScript static analyzers from language
 specifications using an _interpreter_-based approach called meta-level static
@@ -16,7 +19,7 @@ Representations for ECMAScript Specifications.
 ## Getting Started Guide
 
 The source code of JSAVER and the dataset of our study are publicly available at
-https://doi.org/10.5281/zenodo.6668789, and the latest version is maintained as
+https://doi.org/10.5281/zenodo.6785678, and the latest version is maintained as
 a GitHub repository:
 
 ```bash

@@ -5,4 +5,4 @@ analysis for JavaScript with diverse analysis techniques.  For reusability, we
 wrote several documents including installation and commands for a new target
 program.  For availability, we published our artifact as
 a [GitHub repository](https://github.com/kaist-plrg/jsaver) and
-a [DOI](https://doi.org/10.5281/zenodo.6668789).
+a [DOI](https://doi.org/10.5281/zenodo.6785678).
