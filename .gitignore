@@ -210,4 +210,3 @@ lib/mimic-test/.merged.js
 lib/esparse/build
 sample.js
 tests/esparse
-test_desc.json
