@@ -12,7 +12,7 @@ This artifact extends [JISET](https://github.com/kaist-plrg/jiset), a JavaScript
 IR-based Semantics Extraction Toolchain, to extract JavaScript definitional
 interpreters from diverse versions of ECMA-262, the standard specification of
 ECMAScript (the official name of JavaScript) written in English. The extracted
-definitional interpreter is written in $\text{IR}_\text{ES}$, an Intermediate
+definitional interpreter is written in IR<sub>ES</sub>, an Intermediate
 Representations for ECMAScript Specifications.
 
 
@@ -49,7 +49,7 @@ artifact, we extracted the definitional interpreter from ES2021 (ES12), the
 latest version of ECMA-262, and manually filled out essential steps of its
 not-yet-compiled parts.  It consists of two different main parts for semantics
 and syntax of JavaScript. For semantics, it compiles abstract algorithms in
-ECMA-262 to corresponding [$\text{IR}_\text{ES}$
+ECMA-262 to corresponding [IR<sub>ES</sub>
 Functions](./src/main/resources/es2021/generated/algorithm/).  For syntax, it
 generates a [JavaScript
 Parser](./src/main/scala/kr/ac/kaist/jsaver/js/Parser.scala) in Scala.
@@ -58,8 +58,8 @@ Parser](./src/main/scala/kr/ac/kaist/jsaver/js/Parser.scala) in Scala.
 ### Meta-Level Static Analysis
 
 JSAVER performs a _meta-level static analysis_ with JavaScript as its
-_defined_-language and $\text{IR}_\text{ES}$ as its _defining_-language.  Thus,
-it indirectly analyzes a JavaScript program by analyzing $\text{IR}_\text{ES}$
+_defined_-language and IR<sub>ES</sub> as its _defining_-language.  Thus,
+it indirectly analyzes a JavaScript program by analyzing IR<sub>ES</sub>
 functions with the AST of the program as an argument.  Using the generated
 parser, it first parses a given JavaScript program to produce an [Abstract
 Syntax Tree (AST)](./src/main/scala/kr/ac/kaist/jsaver/js/AST.scala). Then,
@@ -67,7 +67,7 @@ Syntax Tree (AST)](./src/main/scala/kr/ac/kaist/jsaver/js/AST.scala). Then,
 Initializer](./src/main/scala/kr/ac/kaist/jsaver/analyzer/Initialize.scala)
 constructs an initial [Abstract
 State](./src/main/scala/kr/ac/kaist/jsaver/analyzer/domain/state/BasicState.scala)
-with the extracted $\text{IR}_\text{ES}$ functions and the produced AST.
+with the extracted IR<sub>ES</sub> functions and the produced AST.
 Finally, JSAVER computes the fixpoint of the [Abstract Transfer
 Function](./src/main/scala/kr/ac/kaist/jsaver/analyzer/AbsTransfer.scala) with
 the initial abstract state.
