@@ -63,7 +63,7 @@ with the following sub-commands:
   definitional interpreter from ECMA-262 defined in `ecma262/spec.html`.
   - `-extract:version={string}` is given, set the git version of ecma262.
   - `-extract:genModel` is given, generate models of the extracted definitional interpreter.
-- `analyze` represents **Meta-Level State Analysis** phase that performs a
+- `analyze` represents **Meta-level State Analysis** phase that performs a
   meta-level static analysis for a given JavaScript program with the fixed
   definitional interpreter.
   - `-analyze:version={string}` is given, set the git version of ecma262.
@@ -124,7 +124,7 @@ not-yet-compiled parts.  If you want to see the compiled $\text{IR}_\text{ES}$
 functions, please see the following directory:
 - [`$JSAVER_HOME/src/main/resources/es2021/generated/algorithm`](./src/main/resources/es2021/generated/algorithm)
 
-### Meta-Level Static Analysis
+### Meta-level Static Analysis
 
 You can analyze a JavaScript file using the `analyze` command as follows:
 ```bash

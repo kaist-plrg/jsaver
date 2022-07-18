@@ -55,7 +55,7 @@ generates a [JavaScript
 Parser](./src/main/scala/kr/ac/kaist/jsaver/js/Parser.scala) in Scala.
 
 
-### Meta-Level Static Analysis
+### Meta-level Static Analysis
 
 JSAVER performs a _meta-level static analysis_ with JavaScript as its
 _defined_-language and IR<sub>ES</sub> as its _defining_-language.  Thus,
